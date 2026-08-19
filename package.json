@@ -1,0 +1,6 @@
+{
+  "name": "x402-kit",
+  "private": true,
+  "type": "module",
+  "workspaces": ["packages/*", "e2e"]
+}
