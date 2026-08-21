@@ -7,6 +7,10 @@ updates:
     groups:
       dev-deps:
         dependency-type: development
+    ignore:
+      # Majors are taken deliberately (zod 4 / TS 7 / vitest 4 all break the build)
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
   - package-ecosystem: github-actions
     directory: /
     schedule:
