@@ -20,6 +20,9 @@ All notable changes to this project are documented here. The format follows
 
 ### Changed
 - CI: single `npm run check` gate, SHA-pinned actions, e2e job on anvil.
+- `e2e/contracts` is a full foundry project (forge-std submodule) with forge
+  tests, Slither and Halmos symbolic properties for the e2e token, each its
+  own CI job.
 
 ### Security
 - Buyer budget (`maxTotalAmount`) counts the signed amount/cap only; the

@@ -16,9 +16,14 @@ Node 20+ is required.
 
 ## Checks
 
-`npm run check` is the CI gate (build, typecheck, unit tests, production
-`npm audit`); `npm run e2e` is the second CI job and needs foundry's `anvil`
-and `cast` on PATH. Run both before opening a PR that touches a payment path.
+`npm run check` is the CI gate for the TypeScript packages (build, typecheck,
+unit tests, production `npm audit`). The e2e token under `e2e/contracts` has
+its own: `npm run contracts:check` (forge fmt, lint, tests), plus
+`npm run slither` and `npm run halmos` (symbolic properties in
+`test/symbolic/`), each a separate CI job. `npm run e2e` boots anvil and runs
+every scenario. Foundry (`forge`, `anvil`, `cast`), `slither` and `halmos` are
+needed locally for those; clone with `--recurse-submodules` (forge-std).
+Run everything that touches what you changed before opening a PR.
 
 ## Updating dependencies
 

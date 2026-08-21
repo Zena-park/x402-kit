@@ -18,6 +18,7 @@ e2e/.facilitator.e2e.json
 # foundry artifacts (e2e/contracts)
 e2e/contracts/out/
 e2e/contracts/cache/
+e2e/contracts/slither.db.json
 
 # local facilitator configs (contain RPC URLs / wallet settings)
 facilitator*.config.json

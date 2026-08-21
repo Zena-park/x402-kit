@@ -19,7 +19,15 @@
     "facilitator": "tsx packages/facilitator/src/server.ts",
     "playground": "npm run build && ./playground/run.sh",
     "audit": "npm audit --omit=dev --audit-level=high",
-    "check": "npm run build && npm run typecheck && npm test && npm run audit"
+    "check": "npm run build && npm run typecheck && npm test && npm run audit",
+    "contracts:build": "forge build --root e2e/contracts",
+    "contracts:test": "forge test --root e2e/contracts",
+    "contracts:fmt": "forge fmt --root e2e/contracts",
+    "contracts:fmt:check": "forge fmt --check --root e2e/contracts",
+    "contracts:lint": "forge lint --root e2e/contracts",
+    "contracts:check": "npm run contracts:fmt:check && npm run contracts:lint && npm run contracts:test",
+    "slither": "cd e2e/contracts && slither . --config-file slither.config.json --fail-low",
+    "halmos": "cd e2e/contracts && halmos"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
