@@ -45,7 +45,7 @@
   },
   "dependencies": {
     "viem": "^2.21.0",
-    "zod": "^3.23.0"
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@x402/core": "^2.23.0"
