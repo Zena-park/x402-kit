@@ -3,6 +3,10 @@
 Published on npm as `@x402.kit/*` — `core`, `facilitator`, `seller`, `buyer`.
 
 [![CI](https://github.com/Zena-park/x402-kit/actions/workflows/ci.yml/badge.svg)](https://github.com/Zena-park/x402-kit/actions/workflows/ci.yml)
+[![npm @x402.kit/core](https://img.shields.io/npm/v/@x402.kit/core?label=%40x402.kit%2Fcore)](https://www.npmjs.com/package/@x402.kit/core)
+[![npm @x402.kit/seller](https://img.shields.io/npm/v/@x402.kit/seller?label=seller)](https://www.npmjs.com/package/@x402.kit/seller)
+[![npm @x402.kit/buyer](https://img.shields.io/npm/v/@x402.kit/buyer?label=buyer)](https://www.npmjs.com/package/@x402.kit/buyer)
+[![npm @x402.kit/facilitator](https://img.shields.io/npm/v/@x402.kit/facilitator?label=facilitator)](https://www.npmjs.com/package/@x402.kit/facilitator)
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
 
 A kit for adding [x402](https://www.x402.org) payments to HTTP APIs: a
@@ -40,7 +44,18 @@ who runs what, and which key each role holds. Then pick your role:
 
 Each package's `README.md` is the option-by-option reference.
 
-## Run it locally
+## Install
+
+```bash
+npm i @x402.kit/seller        # charge for an API
+npm i @x402.kit/buyer         # pay for one
+npm i @x402.kit/facilitator   # run your own verify / settle service
+```
+
+`@x402.kit/core` is pulled in as a dependency; install it directly only when
+writing a custom scheme or transport.
+
+## Run it locally (from source)
 
 Requirements: Node 20+, and [foundry](https://getfoundry.sh) (`anvil`) for the
 on-chain demos.
