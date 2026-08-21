@@ -6,6 +6,10 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.1.0] - 2026-08-22
+
+First public release, published on npm as `@x402.kit/*`.
+
 ### Added
 - `@x402.kit/core` — `exact` (EIP-3009 / Permit2) and `upto` schemes, payload
   codecs, verification with settle-path simulation, pending-receipt-aware
@@ -34,3 +38,6 @@ All notable changes to this project are documented here. The format follows
 - Seller replay guard is shared across paywalls in a process.
 - Facilitator applies the `minAmount` floor at settle, checks auth before
   rate limiting, and supports `trustProxy`.
+
+[Unreleased]: https://github.com/Zena-park/x402-kit/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/Zena-park/x402-kit/releases/tag/v0.1.0
