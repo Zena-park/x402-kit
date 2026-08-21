@@ -4,8 +4,8 @@ import type {
   FacilitatorRequest,
   PaymentRequirements,
   SettleResponse,
-} from "@x402kit/core";
-import { signPaymentSchedule } from "@x402kit/buyer";
+} from "@x402.kit/core";
+import { signPaymentSchedule } from "@x402.kit/buyer";
 import {
   chargeScheduled,
   dueEntries,

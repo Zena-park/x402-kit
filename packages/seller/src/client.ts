@@ -3,7 +3,7 @@
  *
  * FacilitatorLike is the structural contract: a remote URL wrapped by
  * FacilitatorClient satisfies it, and so does an embedded
- * `createFacilitator()` instance from @x402kit/facilitator — the paywall
+ * `createFacilitator()` instance from @x402.kit/facilitator — the paywall
  * accepts either without knowing the difference.
  *
  * Transport failures throw FacilitatorUnreachableError so the seller can tell
@@ -16,7 +16,7 @@ import type {
   SettleResponse,
   SupportedResponse,
   VerifyResponse,
-} from "@x402kit/core";
+} from "@x402.kit/core";
 
 export interface FacilitatorLike {
   verify(req: FacilitatorRequest): Promise<VerifyResponse>;
@@ -82,7 +82,7 @@ export class FacilitatorClient implements FacilitatorLike {
     }
     if (url.protocol === "http:" && !LOOPBACK.has(url.hostname) && !options.allowInsecure) {
       console.warn(
-        `[x402kit/seller] facilitator ${url.origin} is plain http — signed payments (bearer credentials) travel unencrypted. ` +
+        `[@x402.kit/seller] facilitator ${url.origin} is plain http — signed payments (bearer credentials) travel unencrypted. ` +
           `Use https, or pass allowInsecure: true to acknowledge.`,
       );
     }

@@ -25,9 +25,9 @@ import {
   type FacilitatorRequest,
   type SettleResponse,
   type VerifyResponse,
-} from "@x402kit/core";
-import { approvePermit2 } from "@x402kit/buyer";
-import { permit2Terms } from "@x402kit/seller";
+} from "@x402.kit/core";
+import { approvePermit2 } from "@x402.kit/buyer";
+import { permit2Terms } from "@x402.kit/seller";
 import {
   RPC,
   SELLER,

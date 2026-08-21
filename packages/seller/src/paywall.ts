@@ -35,7 +35,7 @@ import {
   type PaymentRequirements,
   type ResourceInfo,
   type SettleResponse,
-} from "@x402kit/core";
+} from "@x402.kit/core";
 import { FacilitatorClient, FacilitatorUnreachableError, toFacilitator, type FacilitatorLike } from "./client.js";
 import { createMemoryReplayStore, type ReplayStore } from "./replay.js";
 

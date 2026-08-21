@@ -17,7 +17,7 @@ import {
   type FacilitatorRequest,
   type SettleResponse,
   type VerifyResponse,
-} from "@x402kit/core";
+} from "@x402.kit/core";
 import { SELLER, balanceOf, buyer, callFacilitator, chainClock, krw, publicClient, wonTerms } from "./fixtures.js";
 
 async function main(): Promise<void> {

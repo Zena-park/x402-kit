@@ -4,7 +4,7 @@ import {
   isPermit2Payload,
   type ExactPermit2Payload,
   type PaymentRequirements,
-} from "@x402kit/core";
+} from "@x402.kit/core";
 import { signPaymentSchedule } from "../src/schedule.js";
 
 const signer = privateKeyToAccount(

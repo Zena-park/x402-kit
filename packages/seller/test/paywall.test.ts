@@ -11,7 +11,7 @@ import {
   type PaymentRequirements,
   type SettleResponse,
   type VerifyResponse,
-} from "@x402kit/core";
+} from "@x402.kit/core";
 import { createPaywall, withGate } from "../src/index.js";
 
 function mockNodeReq() {

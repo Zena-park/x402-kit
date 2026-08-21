@@ -11,7 +11,7 @@
 
 import { EventEmitter } from "node:events";
 import { describe, expect, it, vi } from "vitest";
-import { ErrorReason, ErrorReasonExtra, type AnySchemeHandler, type FacilitatorRequest, type SettleResponse } from "@x402kit/core";
+import { ErrorReason, ErrorReasonExtra, type AnySchemeHandler, type FacilitatorRequest, type SettleResponse } from "@x402.kit/core";
 import { createFacilitator, type Facilitator } from "../src/facilitator.js";
 import { assertSettleExposure, createRequestHandler } from "../src/server.js";
 import type { ResolvedConfig } from "../src/config.js";

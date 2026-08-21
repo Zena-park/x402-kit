@@ -14,7 +14,7 @@ import {
   type PaymentPayload,
   type SettleResponse,
   type VerifyResponse,
-} from "@x402kit/core";
+} from "@x402.kit/core";
 import { SETTLEMENT_OVERRIDES_HEADER, createPaywall, uptoTerms, withGate } from "../src/index.js";
 import { withPaywall as nextPaywall } from "../src/next.js";
 import { paywall as honoPaywall } from "../src/hono.js";

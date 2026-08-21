@@ -23,7 +23,7 @@
 
 import { timingSafeEqual } from "node:crypto";
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
-import { ErrorReasonExtra, type FacilitatorRequest } from "@x402kit/core";
+import { ErrorReasonExtra, type FacilitatorRequest } from "@x402.kit/core";
 import { ConfigError, assertSettleExposure, loadConfig, type ResolvedConfig } from "./config.js";
 import { createFacilitator, type Facilitator } from "./facilitator.js";
 

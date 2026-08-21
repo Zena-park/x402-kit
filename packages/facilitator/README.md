@@ -1,4 +1,4 @@
-# @x402kit/facilitator
+# @x402.kit/facilitator
 
 A self-hostable x402 facilitator: `/verify`, `/settle`, `/supported`,
 `/health`, speaking spec §7 exactly — standard clients connect by changing
@@ -22,8 +22,8 @@ truth, so it runs with no database.
 ```bash
 PRIVATE_KEY=0x... FACILITATOR_CONFIG=./facilitator.config.json npx x402-facilitator
 # or
-docker build -f packages/facilitator/Dockerfile -t x402kit/facilitator .
-docker run -v ./facilitator.config.json:/config.json -e PRIVATE_KEY=0x... -p 4021:4021 x402kit/facilitator
+docker build -f packages/facilitator/Dockerfile -t x402-kit/facilitator .
+docker run -v ./facilitator.config.json:/config.json -e PRIVATE_KEY=0x... -p 4021:4021 x402-kit/facilitator
 ```
 
 The signer key pays the gas. `tokens` is an allowlist by default — `"tokens": "*"`
@@ -53,7 +53,7 @@ least one of these is set:
 
 | Control | Where | Effect |
 |---|---|---|
-| `SETTLE_API_KEY` (env; name via `settleApiKeyEnv`) | env | `POST /verify` and `/settle` require `authorization: Bearer <key>` or `x-api-key` (constant-time compare). `@x402kit/seller`'s `FacilitatorClient` sends it via `{ apiKey }`. |
+| `SETTLE_API_KEY` (env; name via `settleApiKeyEnv`) | env | `POST /verify` and `/settle` require `authorization: Bearer <key>` or `x-api-key` (constant-time compare). `@x402.kit/seller`'s `FacilitatorClient` sends it via `{ apiKey }`. |
 | `allowedPayTo: ["0x…"]` | config | Only settle to your own sellers' addresses. |
 | `unauthenticatedSettle: true` | config | Explicit opt-out — local/test, or behind your own gateway. |
 
@@ -87,13 +87,13 @@ reverts. The permit2 proxy override, if set, must point at a real deployed
 ## Embedded
 
 ```ts
-import { createFacilitator, loadConfig } from "@x402kit/facilitator";
+import { createFacilitator, loadConfig } from "@x402.kit/facilitator";
 
 const facilitator = createFacilitator(loadConfig("facilitator.config.json"));
 // facilitator.verify(req) / facilitator.settle(req) — plug into any server.
-// It satisfies @x402kit/seller's FacilitatorLike, so a seller can run its own:
+// It satisfies @x402.kit/seller's FacilitatorLike, so a seller can run its own:
 // createPaywall({ accepts, facilitator })
 ```
 
 Custom schemes: `createFacilitator(config, [myScheme])` — anything implementing
-`SchemeHandler` from `@x402kit/core`.
+`SchemeHandler` from `@x402.kit/core`.

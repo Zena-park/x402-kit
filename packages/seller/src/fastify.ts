@@ -3,7 +3,7 @@
  * reuses the node:http conversion (`request.raw` is an IncomingMessage,
  * `reply.raw` a ServerResponse).
  *
- *   import { paywall } from "@x402kit/seller/fastify";
+ *   import { paywall } from "@x402.kit/seller/fastify";
  *   fastify.addHook("preHandler", paywall({ accepts: [...], facilitator: "https://…" }));
  *   // or per-route: { preHandler: paywall({...}) }
  *
@@ -12,7 +12,7 @@
  * lets fastify continue.
  */
 
-import { HEADER_PAYMENT_RESPONSE } from "@x402kit/core";
+import { HEADER_PAYMENT_RESPONSE } from "@x402.kit/core";
 import { applyDecision, requestFromNode, type NodeRequestLike, type NodeResponseLike } from "./node.js";
 import { createPaywall, type Paywall, type PaywallOptions } from "./paywall.js";
 

@@ -47,7 +47,7 @@ import {
   type SettleResponse,
   type SupportedResponse,
   type VerifyResponse,
-} from "@x402kit/core";
+} from "@x402.kit/core";
 import { chainIdOf, ConfigError, type ChainConfig, type ResolvedConfig } from "./config.js";
 
 /** Cap on the in-memory settle cache — a runaway backstop, far above real load */

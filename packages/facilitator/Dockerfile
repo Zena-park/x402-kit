@@ -1,7 +1,7 @@
 # Build from the monorepo root:
-#   docker build -f packages/facilitator/Dockerfile -t x402kit/facilitator .
+#   docker build -f packages/facilitator/Dockerfile -t x402-kit/facilitator .
 # Run:
-#   docker run -v ./facilitator.config.json:/config.json -e PRIVATE_KEY=0x... -p 4021:4021 x402kit/facilitator
+#   docker run -v ./facilitator.config.json:/config.json -e PRIVATE_KEY=0x... -p 4021:4021 x402-kit/facilitator
 
 FROM node:22-alpine AS build
 WORKDIR /app
@@ -14,7 +14,7 @@ COPY e2e/package.json e2e/
 RUN npm ci --no-fund --no-audit
 COPY packages/core packages/core
 COPY packages/facilitator packages/facilitator
-RUN npm run build -w @x402kit/core -w @x402kit/facilitator \
+RUN npm run build -w @x402.kit/core -w @x402.kit/facilitator \
   && npm prune --omit=dev
 
 FROM node:22-alpine

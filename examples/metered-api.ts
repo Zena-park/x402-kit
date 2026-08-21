@@ -22,9 +22,9 @@
 
 import { createServer } from "node:http";
 import type { Address } from "viem";
-import { HEADER_PAYMENT_RESPONSE, type SupportedResponse } from "@x402kit/core";
-import { approvePermit2, wrapFetch } from "@x402kit/buyer";
-import { applyDecision, createPaywall, requestFromNode, uptoTerms } from "@x402kit/seller";
+import { HEADER_PAYMENT_RESPONSE, type SupportedResponse } from "@x402.kit/core";
+import { approvePermit2, wrapFetch } from "@x402.kit/buyer";
+import { applyDecision, createPaywall, requestFromNode, uptoTerms } from "@x402.kit/seller";
 import { FACILITATOR, NETWORK, SELLER, TOKEN, balanceOf, buyer, buyerWallet, chainNow, fmt, publicClient } from "./lib.js";
 
 const PORT = 4051;

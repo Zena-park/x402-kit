@@ -9,9 +9,9 @@
  */
 
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
-import { HEADER_PAYMENT_REQUIRED, HEADER_PAYMENT_RESPONSE, decodePaymentRequiredSafe, decodeSettleResponseSafe } from "@x402kit/core";
-import { approvePermit2, wrapFetch } from "@x402kit/buyer";
-import { permit2Terms, withPaywall } from "@x402kit/seller";
+import { HEADER_PAYMENT_REQUIRED, HEADER_PAYMENT_RESPONSE, decodePaymentRequiredSafe, decodeSettleResponseSafe } from "@x402.kit/core";
+import { approvePermit2, wrapFetch } from "@x402.kit/buyer";
+import { permit2Terms, withPaywall } from "@x402.kit/seller";
 import { FACILITATOR, NETWORK, SELLER_ADDRESS, TOKEN, act, balanceOf, buyer, buyerWallet, chainNow, krw, publicClient } from "./world.js";
 
 const PORT = 4030;

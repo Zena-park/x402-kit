@@ -1,4 +1,4 @@
-# @x402kit/core
+# @x402.kit/core
 
 x402 v2 protocol core: spec-exact types, the base64 wire codec, the pluggable
 `SchemeHandler` interface, and two built-in schemes — `exact` (a fixed price;
@@ -9,7 +9,7 @@ EOA, ERC-1271 smart accounts, and ERC-6492 undeployed accounts alike. Runtime de
 viem only. No HTTP, no framework — transports live in the presets.
 
 ```ts
-import { buildPaymentRequired, exactScheme, encodePaymentRequired } from "@x402kit/core";
+import { buildPaymentRequired, exactScheme, encodePaymentRequired } from "@x402.kit/core";
 
 // A POS terminal: put the 402 terms in a QR, no HTTP server involved
 const required = buildPaymentRequired({
@@ -23,8 +23,8 @@ const required = buildPaymentRequired({
 showQr(encodePaymentRequired(required));
 
 // Custom schemes plug in through the same interface exact uses
-import type { SchemeHandler } from "@x402kit/core";
+import type { SchemeHandler } from "@x402.kit/core";
 ```
 
-Most integrators want a preset instead: `@x402kit/seller` (middleware),
-`@x402kit/buyer` (fetch wrapper), `@x402kit/facilitator` (server).
+Most integrators want a preset instead: `@x402.kit/seller` (middleware),
+`@x402.kit/buyer` (fetch wrapper), `@x402.kit/facilitator` (server).

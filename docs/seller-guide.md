@@ -19,7 +19,7 @@ the facilitator's job.
 ## 0. Install and the big picture
 
 ```bash
-npm i @x402kit/seller @x402kit/core
+npm i @x402.kit/seller @x402.kit/core
 ```
 
 ```
@@ -60,7 +60,7 @@ Reads the domain off the token (ERC-5267). Needs an RPC read, so it is async —
 call it once at boot and cache the result:
 
 ```ts
-import { erc3009Terms } from "@x402kit/seller";
+import { erc3009Terms } from "@x402.kit/seller";
 import { createPublicClient, http } from "viem";
 import { base } from "viem/chains";
 
@@ -80,14 +80,14 @@ const terms = await erc3009Terms({
 Most ERC-20s. Settled through Permit2; no domain, no RPC, synchronous:
 
 ```ts
-import { permit2Terms } from "@x402kit/seller";
+import { permit2Terms } from "@x402.kit/seller";
 
 const terms = permit2Terms({ network: "eip155:8453", asset: MY_TOKEN, payTo: MY_ADDRESS, amount: "10000" });
 // terms.extra.assetTransferMethod === "permit2"
 ```
 
 The buyer needs a **one-time** Permit2 `approve` on that token
-(`approvePermit2` in `@x402kit/buyer`). Nothing for the seller to do, but tell
+(`approvePermit2` in `@x402.kit/buyer`). Nothing for the seller to do, but tell
 your buyers in your docs/UI.
 
 ### Two pricing models: a fixed price (`exact`) or a cap (`upto`)
@@ -99,7 +99,7 @@ handler measures, and you settle the actual (≤ cap, `"0"` allowed). One cap is
 drawn once. For per-period billing use the pre-signed schedules in §7.
 
 ```ts
-import { uptoTerms, SETTLEMENT_OVERRIDES_HEADER } from "@x402kit/seller";
+import { uptoTerms, SETTLEMENT_OVERRIDES_HEADER } from "@x402.kit/seller";
 
 // 1. terms: the cap, and the facilitator's address from its /supported (kinds[].extra.facilitatorAddress)
 const terms = uptoTerms({ network, asset: USDC, payTo: MY_ADDRESS, maxAmount: "1000000", facilitatorAddress });
@@ -138,7 +138,7 @@ buyer needs to true its budget up to the actual — would not reach them.
 
 ```ts
 import { Hono } from "hono";
-import { paywall } from "@x402kit/seller/hono";
+import { paywall } from "@x402.kit/seller/hono";
 
 const app = new Hono();
 app.use("/premium/*", paywall({ accepts: [terms], facilitator: FACILITATOR_URL }));
@@ -149,7 +149,7 @@ app.get("/premium/report", (c) => c.json({ data: "..." }));
 
 ```ts
 import express from "express";
-import { paywall } from "@x402kit/seller/express";
+import { paywall } from "@x402.kit/seller/express";
 
 const app = express();
 app.use("/premium", paywall({ accepts: [terms], facilitator: FACILITATOR_URL }));
@@ -159,7 +159,7 @@ app.get("/premium/report", (req, res) => res.json({ data: "..." }));
 ### Fastify
 
 ```ts
-import { paywall } from "@x402kit/seller/fastify";
+import { paywall } from "@x402.kit/seller/fastify";
 
 fastify.addHook("preHandler", paywall(options));        // global
 // or per route
@@ -170,7 +170,7 @@ fastify.get("/premium/report", { preHandler: paywall(options) }, handler);
 
 ```ts
 // app/api/premium/route.ts
-import { withPaywall } from "@x402kit/seller/next";
+import { withPaywall } from "@x402.kit/seller/next";
 
 export const GET = withPaywall(options, async (req) => Response.json({ data: "..." }));
 ```
@@ -178,7 +178,7 @@ export const GET = withPaywall(options, async (req) => Response.json({ data: "..
 ### No framework (`node:http`)
 
 ```ts
-import { withPaywall } from "@x402kit/seller/node";
+import { withPaywall } from "@x402.kit/seller/node";
 import { createServer } from "node:http";
 
 createServer(withPaywall(options, (req, res) => { res.end("paid content"); })).listen(3000);
@@ -191,7 +191,7 @@ On a web-standard `Request`/`Response` runtime (Deno, Bun, Cloudflare Workers,
 SvelteKit, …) call it yourself:
 
 ```ts
-import { createPaywall } from "@x402kit/seller";
+import { createPaywall } from "@x402.kit/seller";
 
 const gate = createPaywall(options);
 
@@ -223,7 +223,7 @@ The `facilitator` option accepts two things.
 `FacilitatorClient` yourself:
 
 ```ts
-import { FacilitatorClient } from "@x402kit/seller";
+import { FacilitatorClient } from "@x402.kit/seller";
 
 const facilitator = new FacilitatorClient("https://facilitator.example.com", {
   apiKey: process.env.FACILITATOR_API_KEY,  // the operator's SETTLE_API_KEY
@@ -236,7 +236,7 @@ const facilitator = new FacilitatorClient("https://facilitator.example.com", {
 process:
 
 ```ts
-import { createFacilitator, loadConfig } from "@x402kit/facilitator";
+import { createFacilitator, loadConfig } from "@x402.kit/facilitator";
 
 const facilitator = createFacilitator(loadConfig("facilitator.config.json"));
 createPaywall({ accepts, facilitator });   // no HTTP round trip
@@ -305,7 +305,7 @@ in-process memory.
 **With more than one seller instance**, pass a shared store:
 
 ```ts
-import type { ReplayStore } from "@x402kit/seller";
+import type { ReplayStore } from "@x402.kit/seller";
 
 const redisReplayStore: ReplayStore = {
   // atomic claim — only the first caller gets true (SET NX PX)
@@ -358,11 +358,11 @@ through rather than treating it as a refusal.
 ## 7. Subscriptions and installments (pre-signed schedules)
 
 The buyer pre-signs one payment per billing period (`signPaymentSchedule` in
-`@x402kit/buyer`); you accept, store, and settle when due. No 402 round trip,
+`@x402.kit/buyer`); you accept, store, and settle when due. No 402 round trip,
 so the buyer may be offline at billing time.
 
 ```ts
-import { validateSchedule, dueEntries, chargeScheduled, scheduleEntryId } from "@x402kit/seller";
+import { validateSchedule, dueEntries, chargeScheduled, scheduleEntryId } from "@x402.kit/seller";
 
 // 1) subscribe endpoint (Express, with express.json()) — the body is an untrusted JSON array
 app.post("/subscribe", async (req, res) => {

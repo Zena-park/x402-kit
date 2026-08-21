@@ -1,7 +1,7 @@
 # Shared local-world bootstrap — SOURCE this, don't run it.
 # Starts anvil, injects the canonical Permit2 + x402ExactPermit2Proxy +
 # x402UptoPermit2Proxy bytecode (vendored from Base — e2e/bytecode/README.md), deploys the in-repo TestToken
-# (minimal EIP-3009 ERC-20), mints to the buyer, and starts @x402kit/facilitator.
+# (minimal EIP-3009 ERC-20), mints to the buyer, and starts @x402.kit/facilitator.
 # Exposes: $ROOT · $RPC · $TOKEN · $DEPLOYER_KEY · $BUYER. Leaves the caller's
 # cwd at $ROOT (npx resolution). Cleans up on EXIT.
 #
@@ -51,7 +51,7 @@ echo "> minting 100,000 KRW to the buyer"
 cast send "$TOKEN" "mint(address,uint256)" "$BUYER" 100000000000 \
   --rpc-url "$RPC" --private-key "$DEPLOYER_KEY" >/dev/null
 
-echo "> starting facilitator (@x402kit/facilitator)"
+echo "> starting facilitator (@x402.kit/facilitator)"
 cat > "$CONFIG" <<EOF
 {
   "port": 4021,

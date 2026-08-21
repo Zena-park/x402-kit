@@ -23,9 +23,9 @@ import {
   encodePaymentPayload,
   encodePaymentRequired,
   type SupportedResponse,
-} from "@x402kit/core";
-import { approvePermit2, signPayment } from "@x402kit/buyer";
-import { FacilitatorClient, uptoTerms } from "@x402kit/seller";
+} from "@x402.kit/core";
+import { approvePermit2, signPayment } from "@x402.kit/buyer";
+import { FacilitatorClient, uptoTerms } from "@x402.kit/seller";
 import type { Address } from "viem";
 import { FACILITATOR, NETWORK, SELLER_ADDRESS, TOKEN, act, balanceOf, buyer, buyerWallet, chainNow, krw, publicClient } from "./world.js";
 

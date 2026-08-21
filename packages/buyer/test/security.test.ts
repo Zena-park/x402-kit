@@ -14,7 +14,7 @@ import {
   buildPaymentRequired,
   encodePaymentRequired,
   type PaymentRequirements,
-} from "@x402kit/core";
+} from "@x402.kit/core";
 import { signPaymentSchedule, wrapFetch } from "../src/index.js";
 import { attachX402 } from "../src/axios.js";
 

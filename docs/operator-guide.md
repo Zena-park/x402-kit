@@ -93,14 +93,14 @@ PRIVATE_KEY=0x... FACILITATOR_CONFIG=./facilitator.config.json npx x402-facilita
 
 ```bash
 # build from the monorepo root
-docker build -f packages/facilitator/Dockerfile -t x402kit/facilitator .
+docker build -f packages/facilitator/Dockerfile -t x402-kit/facilitator .
 
 docker run -d --name facilitator \
   -v "$PWD/facilitator.config.json:/config.json:ro" \
   -e PRIVATE_KEY=0x... \
   -e SETTLE_API_KEY=... \
   -p 4021:4021 \
-  x402kit/facilitator
+  x402-kit/facilitator
 ```
 
 The image runs as the non-root `node` user with `FACILITATOR_CONFIG=/config.json`
@@ -235,8 +235,8 @@ Two replicas sharing a key both broadcast the same payment and one reverts
 You can skip the separate server and run it inside the seller:
 
 ```ts
-import { createFacilitator, loadConfig } from "@x402kit/facilitator";
-import { createPaywall } from "@x402kit/seller";
+import { createFacilitator, loadConfig } from "@x402.kit/facilitator";
+import { createPaywall } from "@x402.kit/seller";
 
 const facilitator = createFacilitator(loadConfig("facilitator.config.json"));
 const gate = createPaywall({ accepts, facilitator });   // no HTTP round trip
@@ -249,7 +249,7 @@ When embedded:
 - `assertSettleExposure` is **not** called automatically when embedded — call it yourself if you later expose verify/settle over HTTP.
 
 Custom schemes go in the second argument: `createFacilitator(config, [myScheme])`
-(anything implementing `SchemeHandler` from `@x402kit/core`).
+(anything implementing `SchemeHandler` from `@x402.kit/core`).
 
 ---
 

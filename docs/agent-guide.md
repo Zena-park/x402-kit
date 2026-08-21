@@ -42,7 +42,7 @@ service and return `{ address, signTypedData }`.
 ## 2. `wrapFetch` with two caps
 
 ```ts
-import { wrapFetch } from "@x402kit/buyer";
+import { wrapFetch } from "@x402.kit/buyer";
 
 const payFetch = wrapFetch(fetch, {
   signer,
@@ -103,7 +103,7 @@ refuse caps altogether, pass `schemes: [exactScheme]`.
 ### Axios instead of fetch
 
 ```ts
-import { attachX402 } from "@x402kit/buyer/axios";
+import { attachX402 } from "@x402.kit/buyer/axios";
 attachX402(axiosInstance, { signer, maxAmount, maxTotalAmount, assets });
 ```
 
@@ -118,7 +118,7 @@ one-time on-chain `approve` from the buyer. This is the **only** gas the agent's
 wallet ever spends:
 
 ```ts
-import { approvePermit2 } from "@x402kit/buyer";
+import { approvePermit2 } from "@x402.kit/buyer";
 import { createPublicClient, createWalletClient, http } from "viem";
 
 const publicClient = createPublicClient({ transport: http(RPC_URL) });
@@ -200,7 +200,7 @@ If a provider bills per period rather than per call, the agent can pre-sign a
 schedule in one ceremony:
 
 ```ts
-import { signPaymentSchedule } from "@x402kit/buyer";
+import { signPaymentSchedule } from "@x402.kit/buyer";
 
 const payloads = await signPaymentSchedule(monthlyTerms, {
   signer,

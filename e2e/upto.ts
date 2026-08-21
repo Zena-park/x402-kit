@@ -28,9 +28,9 @@ import {
   type SettleResponse,
   type SupportedResponse,
   type VerifyResponse,
-} from "@x402kit/core";
-import { approvePermit2 } from "@x402kit/buyer";
-import { createPaywall, uptoTerms } from "@x402kit/seller";
+} from "@x402.kit/core";
+import { approvePermit2 } from "@x402.kit/buyer";
+import { createPaywall, uptoTerms } from "@x402.kit/seller";
 import { FACILITATOR_URL, RPC, SELLER, TOKEN, balanceOf, buyer, callFacilitator, chainClock, krw, publicClient } from "./fixtures.js";
 
 async function main(): Promise<void> {

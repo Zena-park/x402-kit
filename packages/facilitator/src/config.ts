@@ -13,7 +13,7 @@
 
 import { readFileSync } from "node:fs";
 import { getAddress, type Address } from "viem";
-import { caip2ChainId, parseAmount, type Network } from "@x402kit/core";
+import { caip2ChainId, parseAmount, type Network } from "@x402.kit/core";
 
 export interface TokenConfig {
   address: Address;

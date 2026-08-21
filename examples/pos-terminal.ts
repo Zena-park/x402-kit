@@ -15,9 +15,9 @@ import {
   decodePaymentRequiredSafe,
   encodePaymentPayload,
   encodePaymentRequired,
-} from "@x402kit/core";
-import { approvePermit2, signPayment } from "@x402kit/buyer";
-import { FacilitatorClient, permit2Terms } from "@x402kit/seller";
+} from "@x402.kit/core";
+import { approvePermit2, signPayment } from "@x402.kit/buyer";
+import { FacilitatorClient, permit2Terms } from "@x402.kit/seller";
 import { FACILITATOR, NETWORK, SELLER, TOKEN, buyer, buyerWallet, chainNow, fmt, publicClient } from "./lib.js";
 
 async function main(): Promise<void> {

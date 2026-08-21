@@ -10,14 +10,14 @@
  */
 
 import { createServer } from "node:http";
-import { approvePermit2, signPaymentSchedule } from "@x402kit/buyer";
+import { approvePermit2, signPaymentSchedule } from "@x402.kit/buyer";
 import {
   chargeScheduled,
   dueEntries,
   permit2Terms,
   validateSchedule,
   type ScheduleEntry,
-} from "@x402kit/seller";
+} from "@x402.kit/seller";
 import {
   FACILITATOR,
   NETWORK,

@@ -1,10 +1,10 @@
-# @x402kit/buyer
+# @x402.kit/buyer
 
 Buyer-side x402 client. Wrap fetch once; 402s get paid and retried, with a
 hard spending cap the wrapper will never sign past.
 
 ```ts
-import { wrapFetch } from "@x402kit/buyer";
+import { wrapFetch } from "@x402.kit/buyer";
 
 const paidFetch = wrapFetch(fetch, {
   signer,                 // viem LocalAccount, or any PaymentSigner (passkey wallets welcome)
@@ -48,7 +48,7 @@ const res = await paidFetch("https://api.example.com/premium");
   usually come from the seller). Undo: `revokePermit2` for permit2 schedules;
   EIP-3009 installments expire with their windows (or `cancelAuthorization`
   on the token).
-- Axios? `import { attachX402 } from "@x402kit/buyer/axios"; attachX402(axios, { signer, maxAmount, assets })`
+- Axios? `import { attachX402 } from "@x402.kit/buyer/axios"; attachX402(axios, { signer, maxAmount, assets })`
   — same safety model, handling axios's 402-as-rejection and retrying once.
 - Retry safely by re-sending the SAME signed payload (same nonce) — the
   facilitator dedupes on the signed on-chain nonce, so a resend settles once.

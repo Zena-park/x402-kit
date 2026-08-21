@@ -1,8 +1,8 @@
 /**
  * Conformance S1-full — all three roles through the shipped presets:
  *
- *   @x402kit/buyer (wrapFetch)  ->  @x402kit/seller (withPaywall, node:http)
- *                               ->  @x402kit/facilitator (HTTP)
+ *   @x402.kit/buyer (wrapFetch)  ->  @x402.kit/seller (withPaywall, node:http)
+ *                               ->  @x402.kit/facilitator (HTTP)
  *
  * pay.ts proves the protocol core; this proves the one-line developer
  * surface: a seller wraps a handler, a buyer wraps fetch, and a payment
@@ -11,9 +11,9 @@
 
 import assert from "node:assert/strict";
 import { createServer } from "node:http";
-import { HEADER_PAYMENT_RESPONSE, decodeSettleResponse } from "@x402kit/core";
-import { withPaywall } from "@x402kit/seller/node";
-import { wrapFetch } from "@x402kit/buyer";
+import { HEADER_PAYMENT_RESPONSE, decodeSettleResponse } from "@x402.kit/core";
+import { withPaywall } from "@x402.kit/seller/node";
+import { wrapFetch } from "@x402.kit/buyer";
 import { FACILITATOR_URL, TOKEN, buyer, chainClock, wonTerms } from "./fixtures.js";
 
 const terms = wonTerms("1200000000"); // 1,200 KRW

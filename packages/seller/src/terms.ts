@@ -10,7 +10,7 @@
  */
 
 import { getContract, type Address, type PublicClient } from "viem";
-import type { Network, PaymentRequirements } from "@x402kit/core";
+import type { Network, PaymentRequirements } from "@x402.kit/core";
 
 const EIP5267_ABI = [
   {

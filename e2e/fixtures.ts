@@ -2,7 +2,7 @@
 
 import { createPublicClient, formatUnits, http, type Address } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
-import { ERC20_ABI, type FacilitatorRequest, type PaymentRequirements } from "@x402kit/core";
+import { ERC20_ABI, type FacilitatorRequest, type PaymentRequirements } from "@x402.kit/core";
 
 export const RPC = "http://127.0.0.1:8545";
 export const FACILITATOR_URL = "http://127.0.0.1:4021";

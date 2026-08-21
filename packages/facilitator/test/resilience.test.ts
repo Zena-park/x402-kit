@@ -18,7 +18,7 @@
  */
 
 import { describe, expect, it, vi } from "vitest";
-import { ErrorReasonExtra, type AnySchemeHandler, type FacilitatorRequest, type SettleResponse } from "@x402kit/core";
+import { ErrorReasonExtra, type AnySchemeHandler, type FacilitatorRequest, type SettleResponse } from "@x402.kit/core";
 import { createFacilitator } from "../src/facilitator.js";
 import type { ResolvedConfig } from "../src/config.js";
 

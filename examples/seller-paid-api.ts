@@ -12,9 +12,9 @@
  */
 
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
-import { HEADER_PAYMENT_RESPONSE, decodeSettleResponseSafe } from "@x402kit/core";
-import { approvePermit2, wrapFetch } from "@x402kit/buyer";
-import { permit2Terms, withPaywall } from "@x402kit/seller";
+import { HEADER_PAYMENT_RESPONSE, decodeSettleResponseSafe } from "@x402.kit/core";
+import { approvePermit2, wrapFetch } from "@x402.kit/buyer";
+import { permit2Terms, withPaywall } from "@x402.kit/seller";
 import { FACILITATOR, NETWORK, SELLER, TOKEN, balanceOf, buyer, buyerWallet, chainNow, fmt, publicClient } from "./lib.js";
 
 const PORT = 4050;

@@ -15,7 +15,7 @@ import {
   type PaymentPayload,
   type PaymentRequirements,
   type PaymentSigner,
-} from "@x402kit/core";
+} from "@x402.kit/core";
 
 /** Schemes a buyer pays with unless told otherwise — exact (a price) and upto (a cap) */
 export const DEFAULT_BUYER_SCHEMES: AnySchemeHandler[] = [exactScheme, uptoScheme];
