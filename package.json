@@ -2,5 +2,27 @@
   "name": "x402-kit",
   "private": true,
   "type": "module",
-  "workspaces": ["packages/*", "e2e"]
+  "workspaces": [
+    "packages/core",
+    "packages/facilitator",
+    "packages/seller",
+    "packages/buyer",
+    "e2e",
+    "playground",
+    "examples"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces --if-present",
+    "test": "vitest run",
+    "e2e": "npm run build && ./e2e/run.sh",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "facilitator": "tsx packages/facilitator/src/server.ts",
+    "playground": "npm run build && ./playground/run.sh"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0",
+    "vitest": "^2.1.0"
+  }
 }

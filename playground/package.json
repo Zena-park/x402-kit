@@ -1,0 +1,15 @@
+{
+  "name": "@x402kit/playground",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "dependencies": {
+    "@x402kit/core": "*",
+    "@x402kit/buyer": "*",
+    "@x402kit/seller": "*",
+    "viem": "^2.21.0"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  }
+}

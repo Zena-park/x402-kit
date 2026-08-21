@@ -2,5 +2,14 @@
   "name": "@x402kit/e2e",
   "private": true,
   "version": "0.0.0",
-  "type": "module"
+  "type": "module",
+  "dependencies": {
+    "@x402kit/core": "*",
+    "viem": "^2.21.0",
+    "@x402kit/seller": "*",
+    "@x402kit/buyer": "*"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  }
 }

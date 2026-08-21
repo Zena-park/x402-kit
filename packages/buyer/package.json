@@ -1,5 +1,54 @@
 {
   "name": "@x402kit/buyer",
-  "version": "0.0.0",
-  "type": "module"
+  "version": "0.1.0",
+  "description": "Buyer-side x402 client — wrapFetch catches 402s, signs within a hard spending cap, retries once. Includes low-level signPayment for QR/POS flows.",
+  "license": "Apache-2.0",
+  "author": "Zena-park",
+  "keywords": [
+    "x402",
+    "payment",
+    "fetch",
+    "axios",
+    "ai-agent",
+    "client"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Zena-park/x402-kit.git"
+  },
+  "homepage": "https://github.com/Zena-park/x402-kit#readme",
+  "bugs": {
+    "url": "https://github.com/Zena-park/x402-kit/issues"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./axios": {
+      "types": "./dist/axios.d.ts",
+      "import": "./dist/axios.js"
+    }
+  },
+  "files": [
+    "dist",
+    "src",
+    "README.md"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@x402kit/core": "^0.1.0",
+    "viem": "^2.21.0"
+  }
 }

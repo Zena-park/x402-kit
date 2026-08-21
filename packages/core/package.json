@@ -1,5 +1,53 @@
 {
   "name": "@x402kit/core",
-  "version": "0.0.0",
-  "type": "module"
+  "version": "0.1.0",
+  "description": "x402 v2 protocol core — spec-exact types, wire codec, pluggable schemes, verification pipeline. Token-agnostic, framework-free.",
+  "license": "Apache-2.0",
+  "author": "Zena-park",
+  "keywords": [
+    "x402",
+    "payment",
+    "eip-3009",
+    "stablecoin",
+    "ethereum",
+    "viem"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Zena-park/x402-kit.git"
+  },
+  "homepage": "https://github.com/Zena-park/x402-kit#readme",
+  "bugs": {
+    "url": "https://github.com/Zena-park/x402-kit/issues"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "src",
+    "README.md"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "viem": "^2.21.0",
+    "zod": "^3.23.0"
+  },
+  "devDependencies": {
+    "@x402/core": "^2.23.0"
+  }
 }

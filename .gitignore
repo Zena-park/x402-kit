@@ -1,6 +1,18 @@
 node_modules/
 dist/
 .env
+.env.*
+!.env.example
 
 # 내부 설계 노트 — 추적하지 않음
 docs-ko/
+
+# e2e 가 생성하는 임시 설정
+e2e/.facilitator.e2e.json
+
+# foundry artifacts (e2e/contracts)
+e2e/contracts/out/
+e2e/contracts/cache/
+
+# local facilitator configs (contain RPC URLs / wallet settings)
+facilitator*.config.json

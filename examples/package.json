@@ -1,0 +1,16 @@
+{
+  "name": "@x402kit/examples",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "dependencies": {
+    "@x402kit/core": "*",
+    "@x402kit/buyer": "*",
+    "@x402kit/seller": "*",
+    "@x402kit/facilitator": "*",
+    "viem": "^2.21.0"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  }
+}

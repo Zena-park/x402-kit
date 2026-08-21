@@ -1,5 +1,71 @@
 {
   "name": "@x402kit/seller",
-  "version": "0.0.0",
-  "type": "module"
+  "version": "0.1.0",
+  "description": "Seller-side x402 middleware — one-line paywall for hono/express/node, framework-agnostic core on web-standard Request/Response.",
+  "license": "Apache-2.0",
+  "author": "Zena-park",
+  "keywords": [
+    "x402",
+    "payment",
+    "middleware",
+    "hono",
+    "express",
+    "next",
+    "fastify"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Zena-park/x402-kit.git"
+  },
+  "homepage": "https://github.com/Zena-park/x402-kit#readme",
+  "bugs": {
+    "url": "https://github.com/Zena-park/x402-kit/issues"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./hono": {
+      "types": "./dist/hono.d.ts",
+      "import": "./dist/hono.js"
+    },
+    "./express": {
+      "types": "./dist/express.d.ts",
+      "import": "./dist/express.js"
+    },
+    "./node": {
+      "types": "./dist/node.d.ts",
+      "import": "./dist/node.js"
+    },
+    "./next": {
+      "types": "./dist/next.d.ts",
+      "import": "./dist/next.js"
+    },
+    "./fastify": {
+      "types": "./dist/fastify.d.ts",
+      "import": "./dist/fastify.js"
+    }
+  },
+  "files": [
+    "dist",
+    "src",
+    "README.md"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@x402kit/core": "^0.1.0",
+    "viem": "^2.21.0"
+  }
 }
