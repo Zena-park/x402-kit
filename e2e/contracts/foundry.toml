@@ -1,4 +1,28 @@
+# Local e2e token only — nothing here is deployed to a public chain. The
+# pins exist so `forge lint`, Slither and Halmos see the same solc output as
+# the e2e harness does.
 [profile.default]
-src = "."
+src = "src"
 out = "out"
-libs = []
+libs = ["lib"]
+solc = "0.8.24"
+evm_version = "cancun"
+optimizer = true
+optimizer_runs = 200
+remappings = ["forge-std/=lib/forge-std/src/"]
+
+[fmt]
+ignore = ["lib/**"]
+line_length = 120
+tab_width = 4
+bracket_spacing = false
+int_types = "long"
+quote_style = "double"
+number_underscore = "thousands"
+multiline_func_header = "attributes_first"
+sort_imports = false
+
+[lint]
+lint_on_build = true
+severity = ["high", "med", "low"]
+ignore = ["lib/**", "test/**/*.sol"]

@@ -41,7 +41,7 @@ cast rpc anvil_setCode 0x4020A4f3b7b90ccA423B9fabCc0CE57C6C240002 \
   "$(cat "$ROOT/e2e/bytecode/x402-upto-permit2-proxy.hex")" --rpc-url "$RPC" >/dev/null
 
 echo "> deploying TestToken (in-repo minimal EIP-3009 ERC-20 — e2e/contracts)"
-TOKEN=$(forge create --root "$ROOT/e2e/contracts" TestToken.sol:TestToken \
+TOKEN=$(forge create --root "$ROOT/e2e/contracts" src/TestToken.sol:TestToken \
   --rpc-url "$RPC" --private-key "$DEPLOYER_KEY" --broadcast --json \
   --constructor-args "Test KRW Stablecoin" "TKRW" \
   | python3 -c 'import sys,json; print(json.load(sys.stdin)["deployedTo"])')

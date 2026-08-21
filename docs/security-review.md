@@ -16,7 +16,21 @@ Four parties, three of them possibly hostile at once:
 | Network | the wire | swap chain / token / recipient / amount, replay across routes and chains |
 
 Out of scope: a compromised facilitator key, a malicious RPC, and bugs in the
-canonical Permit2 / x402 proxy contracts.
+canonical Permit2 / x402 proxy contracts (vendored as bytecode for the e2e
+run; audited in their own repositories).
+
+## The one in-repo contract
+
+`e2e/contracts/src/TestToken.sol` is the EIP-3009 token the e2e harness
+deploys on anvil. It is never deployed to a public chain, but the kit's
+eip3009 path trusts its state machine, so it gets the same treatment
+token-kit's contracts do:
+
+| Check | Tool | Where |
+|---|---|---|
+| Static analysis, fail on low | Slither (`slither.config.json`) | CI job `slither` |
+| State-machine properties over all inputs: supply conservation, exact transfer amounts, no overdraw, allowance consumption, minter-only mint, used nonce always reverts, time window always enforced | Halmos (`halmos.toml`, `test/symbolic/`) | CI job `halmos (symbolic)` |
+| Signature path concretely: valid transfer + `AuthorizationUsed`, replay, wrong signer, tampered amount | forge test (`test/TestToken.t.sol`) | CI job `contracts` |
 
 ## Guarantees, and where they are enforced
 

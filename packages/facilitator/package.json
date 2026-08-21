@@ -13,12 +13,11 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Zena-park/x402-kit.git"
+    "url": "git+https://github.com/Zena-park/x402-kit.git",
+    "directory": "packages/facilitator"
   },
-  "homepage": "https://github.com/Zena-park/x402-kit#readme",
-  "bugs": {
-    "url": "https://github.com/Zena-park/x402-kit/issues"
-  },
+  "homepage": "https://github.com/Zena-park/x402-kit/tree/main/packages/facilitator#readme",
+  "bugs": "https://github.com/Zena-park/x402-kit/issues",
   "engines": {
     "node": ">=20"
   },
@@ -44,7 +43,8 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "typecheck": "tsc -p tsconfig.json --noEmit"
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "prepublishOnly": "npm run build"
   },
   "dependencies": {
     "@x402kit/core": "^0.1.0",
