@@ -1,5 +1,6 @@
 # x402-kit
 
+[![CI](https://github.com/Zena-park/x402-kit/actions/workflows/ci.yml/badge.svg)](https://github.com/Zena-park/x402-kit/actions/workflows/ci.yml)
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
 
 A kit for adding [x402](https://www.x402.org) payments to HTTP APIs: a

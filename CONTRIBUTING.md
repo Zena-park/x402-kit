@@ -14,6 +14,20 @@ npm run e2e       # needs foundry (anvil) on PATH
 
 Node 20+ is required.
 
+## Checks
+
+`npm run check` is the CI gate (build, typecheck, unit tests, production
+`npm audit`); `npm run e2e` is the second CI job and needs foundry's `anvil`
+and `cast` on PATH. Run both before opening a PR that touches a payment path.
+
+## Updating dependencies
+
+Dependabot opens weekly PRs for minor/patch bumps and for GitHub Actions; it
+is configured to skip major bumps because `zod`, `typescript` and `vitest`
+majors have each broken the build. Take majors by hand, on their own PR, with
+the reason in the commit message. `viem` and `@x402/core` define the wire
+format and the on-chain ABIs — read their changelogs before bumping.
+
 ## Pull requests
 
 - Keep changes focused; one concern per PR.

@@ -4,6 +4,23 @@ x402-kit handles signed payment authorizations and, in the facilitator, a hot
 wallet that submits on-chain transactions. Please treat vulnerability reports
 with care.
 
+## Status
+
+Pre-1.0. The code has had one internal pre-release security review
+(`docs/security-review.md`) and no external audit. The facilitator moves real
+funds on real chains: run it with an allowlist, a funded-for-gas-only hot
+wallet, and an API key, and treat every `0.x` release as potentially
+breaking.
+
+## What goes where
+
+| You found… | Do this |
+|---|---|
+| A way to make a payment verify but not settle, settle twice, move the wrong amount/token/recipient, or spend the facilitator's gas without paying | Private report (below) |
+| A way to leak the signer key, API key, or RPC URL | Private report (below) |
+| A crash, wrong error code, or docs mistake with no money or key at stake | Public issue |
+| A vulnerable dependency | Public issue, unless it is reachable in a way covered by the rows above |
+
 ## Reporting a vulnerability
 
 **Do not open a public issue for security bugs.**

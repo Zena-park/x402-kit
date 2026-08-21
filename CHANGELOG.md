@@ -18,6 +18,9 @@ All notable changes to this project are documented here. The format follows
 - `@x402kit/buyer` — `wrapFetch` / axios interceptor with per-payment and
   cumulative spending caps, asset/network allowlists, pre-signed schedules.
 
+### Changed
+- CI: single `npm run check` gate, SHA-pinned actions, e2e job on anvil.
+
 ### Security
 - Buyer budget (`maxTotalAmount`) counts the signed amount/cap only; the
   seller-reported charge never restores it.

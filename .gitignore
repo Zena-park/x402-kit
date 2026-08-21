@@ -4,8 +4,13 @@ dist/
 .env.*
 !.env.example
 
-# 내부 설계 노트 — 추적하지 않음
+# Korean working notes. The published docs are in docs/ and are English-only;
+# docs-ko/ is a personal scratch space and is deliberately not tracked.
 docs-ko/
+
+# build metadata / OS
+*.tsbuildinfo
+.DS_Store
 
 # e2e 가 생성하는 임시 설정
 e2e/.facilitator.e2e.json

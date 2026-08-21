@@ -17,12 +17,17 @@
     "e2e": "npm run build && ./e2e/run.sh",
     "typecheck": "npm run typecheck --workspaces --if-present",
     "facilitator": "tsx packages/facilitator/src/server.ts",
-    "playground": "npm run build && ./playground/run.sh"
+    "playground": "npm run build && ./playground/run.sh",
+    "audit": "npm audit --omit=dev --audit-level=high",
+    "check": "npm run build && npm run typecheck && npm test && npm run audit"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
     "tsx": "^4.19.0",
     "typescript": "^5.6.0",
     "vitest": "^3.2.7"
+  },
+  "engines": {
+    "node": ">=20"
   }
 }
