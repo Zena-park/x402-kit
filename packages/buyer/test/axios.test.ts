@@ -15,7 +15,7 @@ import {
   encodePaymentRequired,
   type ExactPayload,
   type PaymentRequirements,
-} from "@x402kit/core";
+} from "@x402.kit/core";
 import { attachX402 } from "../src/axios.js";
 
 const signer = privateKeyToAccount("0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80");

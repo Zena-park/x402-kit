@@ -11,8 +11,8 @@
  */
 
 import type { Account, WalletClient } from "viem";
-import type { PaymentSigner } from "@x402kit/core";
-import { wrapFetch } from "@x402kit/buyer";
+import type { PaymentSigner } from "@x402.kit/core";
+import { wrapFetch } from "@x402.kit/buyer";
 
 /**
  * The whole adapter: a viem wallet client already signs typed data — its method
@@ -60,6 +60,6 @@ export function makePayFetch(
 
   For a token that needs Permit2 (no EIP-3009), run the one-time approve first:
 
-    import { approvePermit2 } from "@x402kit/buyer";
+    import { approvePermit2 } from "@x402.kit/buyer";
     await approvePermit2({ walletClient: wallet, publicClient, token: USDC });
 */

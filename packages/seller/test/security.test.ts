@@ -22,9 +22,9 @@ import {
   type PaymentRequirements,
   type SettleResponse,
   type VerifyResponse,
-} from "@x402kit/core";
+} from "@x402.kit/core";
 import { privateKeyToAccount } from "viem/accounts";
-import { signPaymentSchedule } from "@x402kit/buyer";
+import { signPaymentSchedule } from "@x402.kit/buyer";
 import {
   FacilitatorClient,
   FacilitatorUnreachableError,

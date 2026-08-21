@@ -8,10 +8,10 @@
 
 import { createPublicClient, createTestClient, createWalletClient, formatUnits, http, type Address } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
-import { ERC20_ABI } from "@x402kit/core";
+import { ERC20_ABI } from "@x402.kit/core";
 
 export const RPC = "http://127.0.0.1:8545";
-export const FACILITATOR = "http://127.0.0.1:4021"; // @x402kit/facilitator — /verify /settle
+export const FACILITATOR = "http://127.0.0.1:4021"; // @x402.kit/facilitator — /verify /settle
 export const TOKEN = process.env.TOKEN_ADDRESS as Address; // any ERC-20 works — EIP-3009 not required
 export const SELLER_ADDRESS = "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC" as Address; // anvil #2
 export const NETWORK = "eip155:31337" as const;

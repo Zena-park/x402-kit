@@ -33,7 +33,7 @@ alongside the payload. So the adapter is a shape change, not real code:
 
 ```ts
 import type { Account, WalletClient } from "viem";
-import type { PaymentSigner } from "@x402kit/core";
+import type { PaymentSigner } from "@x402.kit/core";
 
 export function walletSigner(wallet: WalletClient, account: Account | `0x${string}`): PaymentSigner {
   const address = typeof account === "string" ? account : account.address;
@@ -63,7 +63,7 @@ If your dapp calls the paid endpoint with `fetch`, wrap it once and payment
 becomes invisible — a 402 is caught, signed, and retried:
 
 ```ts
-import { wrapFetch } from "@x402kit/buyer";
+import { wrapFetch } from "@x402.kit/buyer";
 
 const payFetch = wrapFetch(fetch, {
   signer: walletSigner(wallet, account),
@@ -97,11 +97,11 @@ When you want to show the user the terms, your own confirm dialog, then sign —
 drive the low-level call and attach the header yourself:
 
 ```ts
-import { signPayment } from "@x402kit/buyer";
+import { signPayment } from "@x402.kit/buyer";
 import {
   HEADER_PAYMENT_REQUIRED, HEADER_PAYMENT_SIGNATURE,
   decodePaymentRequiredSafe, encodePaymentPayload,
-} from "@x402kit/core";
+} from "@x402.kit/core";
 
 // 1. hit the endpoint, read the 402 terms (the Safe decoder never throws on a malformed header)
 const first = await fetch("/api/premium");
@@ -131,7 +131,7 @@ needs a one-time on-chain `approve` from the buyer per token — the single
 gas-spending action in the buyer flow. Do it before the first payment:
 
 ```ts
-import { approvePermit2 } from "@x402kit/buyer";
+import { approvePermit2 } from "@x402.kit/buyer";
 
 // walletClient is a viem WalletClient with an account; publicClient reads chain state
 const tx = await approvePermit2({ walletClient, publicClient, token: TOKEN_ADDRESS });
@@ -148,7 +148,7 @@ they need no approve.
 
 ```ts
 import { useWalletClient, usePublicClient, useAccount } from "wagmi";
-import { wrapFetch, approvePermit2 } from "@x402kit/buyer";
+import { wrapFetch, approvePermit2 } from "@x402.kit/buyer";
 
 function usePayFetch(maxAmount: string, assets: `0x${string}`[]) {
   const { address } = useAccount();

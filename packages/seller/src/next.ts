@@ -4,7 +4,7 @@
  * what createPaywall already speaks.
  *
  *   // app/api/premium/route.ts
- *   import { withPaywall } from "@x402kit/seller/next";
+ *   import { withPaywall } from "@x402.kit/seller/next";
  *   export const GET = withPaywall(
  *     { accepts: [...], facilitator: "https://…" },
  *     async (req) => Response.json({ data: "premium" }),
@@ -15,7 +15,7 @@
  * its response.
  */
 
-import { HEADER_PAYMENT_RESPONSE } from "@x402kit/core";
+import { HEADER_PAYMENT_RESPONSE } from "@x402.kit/core";
 import { createPaywall, takeSettlementOverrides, type Paywall, type PaywallOptions } from "./paywall.js";
 
 type RouteHandler<Ctx> = (request: Request, ctx: Ctx) => Response | Promise<Response>;

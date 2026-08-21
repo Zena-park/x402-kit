@@ -15,7 +15,7 @@ import {
   type PaymentRequirements,
   type SettleResponse,
   type VerifyResponse,
-} from "@x402kit/core";
+} from "@x402.kit/core";
 import { withPaywall } from "../src/next.js";
 import { paywall as fastifyPaywall } from "../src/fastify.js";
 import { paywall as expressPaywall } from "../src/express.js";

@@ -1,5 +1,5 @@
 {
-  "name": "@x402kit/seller",
+  "name": "@x402.kit/seller",
   "version": "0.1.0",
   "description": "Seller-side x402 middleware — one-line paywall for hono/express/node, framework-agnostic core on web-standard Request/Response.",
   "license": "Apache-2.0",
@@ -65,7 +65,7 @@
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "@x402kit/core": "^0.1.0",
+    "@x402.kit/core": "^0.1.0",
     "viem": "^2.21.0"
   }
 }

@@ -1,5 +1,5 @@
 /**
- * Seller side of pre-signed payment schedules (see @x402kit/buyer
+ * Seller side of pre-signed payment schedules (see @x402.kit/buyer
  * signPaymentSchedule): accept n pre-signed exact payments, store them, and
  * settle one per period through any standard facilitator.
  *
@@ -29,7 +29,7 @@ import {
   type PaymentPayload,
   type PaymentRequirements,
   type SettleResponse,
-} from "@x402kit/core";
+} from "@x402.kit/core";
 import { toFacilitator, type FacilitatorLike } from "./client.js";
 
 /** One stored installment: the pre-signed payload and the terms it settles under */

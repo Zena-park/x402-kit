@@ -1,5 +1,5 @@
 {
-  "name": "@x402kit/facilitator",
+  "name": "@x402.kit/facilitator",
   "version": "0.1.0",
   "description": "Self-hostable x402 facilitator — /verify, /settle, /supported. One config file + Docker, or embed via createFacilitator().",
   "license": "Apache-2.0",
@@ -47,7 +47,7 @@
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "@x402kit/core": "^0.1.0",
+    "@x402.kit/core": "^0.1.0",
     "viem": "^2.21.0"
   }
 }

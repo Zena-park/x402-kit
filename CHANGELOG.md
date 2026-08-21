@@ -7,15 +7,15 @@ All notable changes to this project are documented here. The format follows
 ## [Unreleased]
 
 ### Added
-- `@x402kit/core` — `exact` (EIP-3009 / Permit2) and `upto` schemes, payload
+- `@x402.kit/core` — `exact` (EIP-3009 / Permit2) and `upto` schemes, payload
   codecs, verification with settle-path simulation, pending-receipt-aware
   settlement and on-chain reconciliation.
-- `@x402kit/facilitator` — HTTP facilitator (`/verify`, `/settle`,
+- `@x402.kit/facilitator` — HTTP facilitator (`/verify`, `/settle`,
   `/supported`, `/health`) with token/payTo allowlists, idempotent settles,
   rate limiting and a Dockerfile.
-- `@x402kit/seller` — paywall core plus express, fastify, hono, next and
+- `@x402.kit/seller` — paywall core plus express, fastify, hono, next and
   node:http adapters, replay guard, `upto` capture.
-- `@x402kit/buyer` — `wrapFetch` / axios interceptor with per-payment and
+- `@x402.kit/buyer` — `wrapFetch` / axios interceptor with per-payment and
   cumulative spending caps, asset/network allowlists, pre-signed schedules.
 
 ### Changed

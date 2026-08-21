@@ -17,7 +17,7 @@ import {
   encodeSettleResponse,
   type PaymentRequirements,
   type UptoPayload,
-} from "@x402kit/core";
+} from "@x402.kit/core";
 import { wrapFetch } from "../src/index.js";
 
 const signer = privateKeyToAccount("0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80");

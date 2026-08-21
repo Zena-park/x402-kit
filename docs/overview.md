@@ -25,14 +25,14 @@ buyer                                   seller                       facilitator
 
 | | **Buyer** | **Seller** | **Facilitator operator** |
 |---|---|---|---|
-| You run | your app / agent / frontend | your HTTP API | one Docker container (`x402kit/facilitator`) |
-| Package | `@x402kit/buyer` | `@x402kit/seller` | `@x402kit/facilitator` |
+| You run | your app / agent / frontend | your HTTP API | one Docker container (`x402-kit/facilitator`) |
+| Package | `@x402.kit/buyer` | `@x402.kit/seller` | `@x402.kit/facilitator` |
 | Key you hold | the paying wallet's key (or the user's browser wallet) | **none** | a **gas** wallet's key — it never holds the token |
 | RPC | only for the one-time Permit2 approve | no | yes, one per chain |
 | Sends transactions | no — signs only | no | yes, every settlement |
 | One line of config | `wrapFetch(fetch, { signer, maxAmount, maxTotalAmount, assets })` | `paywall({ accepts, facilitator })` | `facilitator.config.json` + `PRIVATE_KEY` + `SETTLE_API_KEY` |
 
-All three packages sit on `@x402kit/core` (types, wire codec, schemes, signature verification).
+All three packages sit on `@x402.kit/core` (types, wire codec, schemes, signature verification).
 
 ## 3. Which roles are yours?
 

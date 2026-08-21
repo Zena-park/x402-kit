@@ -1,5 +1,7 @@
 # x402-kit
 
+Published on npm as `@x402.kit/*` — `core`, `facilitator`, `seller`, `buyer`.
+
 [![CI](https://github.com/Zena-park/x402-kit/actions/workflows/ci.yml/badge.svg)](https://github.com/Zena-park/x402-kit/actions/workflows/ci.yml)
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
 
@@ -16,10 +18,10 @@ buyer (wrapFetch) ──402 / PAYMENT-SIGNATURE──▶ seller (paywall) ──
 
 | Package | One line | What it does |
 |---|---|---|
-| `@x402kit/seller` | `app.use(paywall({ accepts, facilitator }))` | 402 + verify + settle middleware — hono · express · fastify · next · node — replay-guarded |
-| `@x402kit/buyer` | `wrapFetch(fetch, { signer, maxAmount, assets })` | catch 402 → sign under per-payment + cumulative caps → retry |
-| `@x402kit/facilitator` | `docker run x402kit/facilitator` | `/verify` `/settle` `/supported`, multi-chain, embeddable, API-key / payTo-scoped |
-| `@x402kit/core` | — | spec-exact types · wire codec · pluggable schemes · `exact` built in |
+| `@x402.kit/seller` | `app.use(paywall({ accepts, facilitator }))` | 402 + verify + settle middleware — hono · express · fastify · next · node — replay-guarded |
+| `@x402.kit/buyer` | `wrapFetch(fetch, { signer, maxAmount, assets })` | catch 402 → sign under per-payment + cumulative caps → retry |
+| `@x402.kit/facilitator` | `docker run x402-kit/facilitator` | `/verify` `/settle` `/supported`, multi-chain, embeddable, API-key / payTo-scoped |
+| `@x402.kit/core` | — | spec-exact types · wire codec · pluggable schemes · `exact` built in |
 
 Mint a token with [token-kit](https://github.com/Zena-park/token-kit), accept
 payments in it with x402-kit.

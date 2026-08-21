@@ -1,10 +1,10 @@
-# @x402kit/seller
+# @x402.kit/seller
 
 Seller-side x402 middleware. One line gates a route behind payment; the
 framework adapters are structural (hono/express are not dependencies).
 
 ```ts
-import { paywall } from "@x402kit/seller/hono"; // or /express, /fastify
+import { paywall } from "@x402.kit/seller/hono"; // or /express, /fastify
 
 app.use("/premium/*", paywall({
   accepts: [{
@@ -24,16 +24,16 @@ Don't want to hand-write the token's EIP-712 domain? `erc3009Terms` reads it
 off the token (ERC-5267):
 
 ```ts
-import { erc3009Terms } from "@x402kit/seller";
+import { erc3009Terms } from "@x402.kit/seller";
 const terms = await erc3009Terms({ network, asset, payTo, amount: "10000", publicClient });
 ```
 
 Token without EIP-3009 (most ERC-20s)? `permit2Terms` builds `exact` terms
 settled through Permit2 — no domain, no client, synchronous. The buyer needs a
-one-time `approve(Permit2, …)` on the token (`approvePermit2` in `@x402kit/buyer`):
+one-time `approve(Permit2, …)` on the token (`approvePermit2` in `@x402.kit/buyer`):
 
 ```ts
-import { permit2Terms } from "@x402kit/seller";
+import { permit2Terms } from "@x402.kit/seller";
 const terms = permit2Terms({ network, asset, payTo, amount: "10000" });
 ```
 
@@ -47,7 +47,7 @@ into the terms; the buyer bakes it into the signature so only that facilitator
 can draw.
 
 ```ts
-import { uptoTerms, SETTLEMENT_OVERRIDES_HEADER } from "@x402kit/seller";
+import { uptoTerms, SETTLEMENT_OVERRIDES_HEADER } from "@x402.kit/seller";
 
 const terms = uptoTerms({ network, asset, payTo, maxAmount: "1000000", facilitatorAddress });
 app.use("/v1/answer", paywall({ accepts: [terms], facilitator, settle: "after-handler", onSettled }));
@@ -72,10 +72,10 @@ Hook-style express/fastify run before the handler and cannot name an amount.
 ## Subscriptions & installments (pre-signed schedules)
 
 The buyer pre-signs one standard payment per billing period
-(`signPaymentSchedule` in `@x402kit/buyer`); you accept, store, and settle:
+(`signPaymentSchedule` in `@x402.kit/buyer`); you accept, store, and settle:
 
 ```ts
-import { validateSchedule, dueEntries, chargeScheduled } from "@x402kit/seller";
+import { validateSchedule, dueEntries, chargeScheduled } from "@x402.kit/seller";
 
 // subscribe endpoint: the request body is an untrusted JSON array of payloads
 const result = validateSchedule(body, [terms]); // terms match · unique nonces · ordered windows
@@ -126,13 +126,13 @@ asserts every `accepts` entry is advertised by the facilitator's `/supported`.
   (`isValid`/`success` must be real booleans); plain `http://` to a
   non-loopback host warns.
 - `facilitator` also accepts any object with `verify`/`settle` — including an
-  embedded `createFacilitator()` from `@x402kit/facilitator`.
-- **Next.js** (App Router): `import { withPaywall } from "@x402kit/seller/next"`
+  embedded `createFacilitator()` from `@x402.kit/facilitator`.
+- **Next.js** (App Router): `import { withPaywall } from "@x402.kit/seller/next"`
   wraps a route handler — `export const GET = withPaywall(options, async (req) => Response.json(...))`.
-- **Fastify**: `import { paywall } from "@x402kit/seller/fastify"` is a
+- **Fastify**: `import { paywall } from "@x402.kit/seller/fastify"` is a
   `preHandler` hook — `fastify.addHook("preHandler", paywall(options))` or
   per-route `{ preHandler: paywall(options) }`.
-- No framework? `import { withPaywall } from "@x402kit/seller/node"` wraps a
+- No framework? `import { withPaywall } from "@x402.kit/seller/node"` wraps a
   plain `node:http` handler. The core (`createPaywall(...).check(request)`)
   works on web-standard Request/Response for everything else — so an adapter is
   ~15 dependency-free lines.

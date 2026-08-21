@@ -1,5 +1,5 @@
 {
-  "name": "@x402kit/buyer",
+  "name": "@x402.kit/buyer",
   "version": "0.1.0",
   "description": "Buyer-side x402 client — wrapFetch catches 402s, signs within a hard spending cap, retries once. Includes low-level signPayment for QR/POS flows.",
   "license": "Apache-2.0",
@@ -48,7 +48,7 @@
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "@x402kit/core": "^0.1.0",
+    "@x402.kit/core": "^0.1.0",
     "viem": "^2.21.0"
   }
 }

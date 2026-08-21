@@ -2,7 +2,7 @@
  * Hono adapter. Typed structurally so hono is not a dependency — any object
  * with `req.raw`, `header()`, and Hono's middleware shape works.
  *
- *   import { paywall } from "@x402kit/seller/hono";
+ *   import { paywall } from "@x402.kit/seller/hono";
  *   app.use("/premium/*", paywall({ accepts: [...], facilitator: "https://…" }));
  *
  * upto: a handler that knows the real charge sets
@@ -10,7 +10,7 @@
  * middleware reads it after next(), strips it, and settles that amount.
  */
 
-import { HEADER_PAYMENT_RESPONSE } from "@x402kit/core";
+import { HEADER_PAYMENT_RESPONSE } from "@x402.kit/core";
 import { createPaywall, takeSettlementOverrides, type PaywallOptions } from "./paywall.js";
 
 interface HonoishContext {

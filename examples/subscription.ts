@@ -10,13 +10,13 @@
  * Run: examples/run.sh
  */
 
-import { approvePermit2, signPaymentSchedule } from "@x402kit/buyer";
+import { approvePermit2, signPaymentSchedule } from "@x402.kit/buyer";
 import {
   chargeScheduled,
   dueEntries,
   permit2Terms,
   validateSchedule,
-} from "@x402kit/seller";
+} from "@x402.kit/seller";
 import {
   FACILITATOR,
   NETWORK,

@@ -25,7 +25,7 @@ import {
   type PaymentRequirements,
   type PaymentSigner,
   type SettleResponse,
-} from "@x402kit/core";
+} from "@x402.kit/core";
 import { DEFAULT_BUYER_SCHEMES, signPayment } from "./signPayment.js";
 
 export interface WrapFetchOptions {

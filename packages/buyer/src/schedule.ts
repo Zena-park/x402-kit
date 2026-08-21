@@ -25,7 +25,7 @@ import {
   type PaymentPayload,
   type PaymentRequirements,
   type PaymentSigner,
-} from "@x402kit/core";
+} from "@x402.kit/core";
 import { signPayment } from "./signPayment.js";
 import { assertAssetAllowlist, assetAllowed } from "./wrapFetch.js";
 

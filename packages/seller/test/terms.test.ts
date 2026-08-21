@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import type { FacilitatorRequest, SupportedResponse } from "@x402kit/core";
+import type { FacilitatorRequest, SupportedResponse } from "@x402.kit/core";
 import { createPaywall, erc3009Terms, permit2Terms } from "../src/index.js";
 
 const ASSET = "0x036CbD53842c5426634e7929541eC2318f3dCF7e";

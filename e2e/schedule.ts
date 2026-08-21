@@ -13,14 +13,14 @@
 
 import assert from "node:assert/strict";
 import { createTestClient, http } from "viem";
-import { ErrorReason } from "@x402kit/core";
-import { signPaymentSchedule } from "@x402kit/buyer";
+import { ErrorReason } from "@x402.kit/core";
+import { signPaymentSchedule } from "@x402.kit/buyer";
 import {
   chargeScheduled,
   dueEntries,
   permit2Terms,
   validateSchedule,
-} from "@x402kit/seller";
+} from "@x402.kit/seller";
 import {
   FACILITATOR_URL,
   RPC,

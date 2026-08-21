@@ -2,7 +2,7 @@
  * Axios adapter — the same buyer safety model as wrapFetch, for axios clients.
  *
  *   import axios from "axios";
- *   import { attachX402 } from "@x402kit/buyer/axios";
+ *   import { attachX402 } from "@x402.kit/buyer/axios";
  *   attachX402(axios, { signer, maxAmount: "1000000" });
  *
  * Typed structurally so axios is not a dependency. The awkward part axios
@@ -21,7 +21,7 @@ import {
   HEADER_PAYMENT_SIGNATURE,
   decodePaymentRequiredSafe,
   decodeSettleResponseSafe,
-} from "@x402kit/core";
+} from "@x402.kit/core";
 import {
   SKIP_CROSS_ORIGIN,
   SKIP_REDIRECTED,

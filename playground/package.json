@@ -1,12 +1,12 @@
 {
-  "name": "@x402kit/playground",
+  "name": "@x402.kit/playground",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "dependencies": {
-    "@x402kit/core": "*",
-    "@x402kit/buyer": "*",
-    "@x402kit/seller": "*",
+    "@x402.kit/core": "*",
+    "@x402.kit/buyer": "*",
+    "@x402.kit/seller": "*",
     "viem": "^2.21.0"
   },
   "scripts": {

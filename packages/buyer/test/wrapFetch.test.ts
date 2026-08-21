@@ -10,7 +10,7 @@ import {
   encodePaymentRequired,
   type ExactPayload,
   type PaymentRequirements,
-} from "@x402kit/core";
+} from "@x402.kit/core";
 import { signPayment, wrapFetch } from "../src/index.js";
 
 const signer = privateKeyToAccount(

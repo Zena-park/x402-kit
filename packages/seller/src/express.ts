@@ -2,11 +2,11 @@
  * Express adapter. Typed structurally so express is not a dependency — plain
  * connect-style middlewares with the same shape work too.
  *
- *   import { paywall } from "@x402kit/seller/express";
+ *   import { paywall } from "@x402.kit/seller/express";
  *   app.use("/premium", paywall({ accepts: [...], facilitator: "https://…" }));
  */
 
-import { HEADER_PAYMENT_RESPONSE } from "@x402kit/core";
+import { HEADER_PAYMENT_RESPONSE } from "@x402.kit/core";
 import { applyDecision, requestFromNode, type NodeRequestLike, type NodeResponseLike } from "./node.js";
 import { createPaywall, type PaywallOptions } from "./paywall.js";
 

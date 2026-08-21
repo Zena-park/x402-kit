@@ -5,7 +5,7 @@
  */
 
 import { describe, expect, it, vi } from "vitest";
-import type { AnySchemeHandler, FacilitatorRequest, SettleResponse } from "@x402kit/core";
+import type { AnySchemeHandler, FacilitatorRequest, SettleResponse } from "@x402.kit/core";
 import { createFacilitator } from "../src/facilitator.js";
 import type { ResolvedConfig } from "../src/config.js";
 

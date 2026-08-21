@@ -17,9 +17,9 @@ import {
   decodePaymentRequiredSafe,
   encodePaymentPayload,
   encodePaymentRequired,
-} from "@x402kit/core";
-import { approvePermit2, signPayment } from "@x402kit/buyer";
-import { FacilitatorClient, permit2Terms } from "@x402kit/seller";
+} from "@x402.kit/core";
+import { approvePermit2, signPayment } from "@x402.kit/buyer";
+import { FacilitatorClient, permit2Terms } from "@x402.kit/seller";
 import { FACILITATOR, NETWORK, SELLER_ADDRESS, TOKEN, act, buyer, buyerWallet, chainNow, krw, publicClient } from "./world.js";
 
 export async function chapterB(): Promise<void> {

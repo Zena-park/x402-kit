@@ -17,7 +17,7 @@
  * This example is TYPE-CHECKED here; run it with a real RPC + signer key.
  */
 
-import { createFacilitator, type ResolvedConfig } from "@x402kit/facilitator";
+import { createFacilitator, type ResolvedConfig } from "@x402.kit/facilitator";
 
 const config: ResolvedConfig = {
   port: 4021,
@@ -49,4 +49,4 @@ export function handleSupported() {
 }
 
 // For a zero-code deployment, skip all of the above and just:
-//   docker run -v ./config.json:/config.json -e PRIVATE_KEY=... x402kit/facilitator
+//   docker run -v ./config.json:/config.json -e PRIVATE_KEY=... x402-kit/facilitator

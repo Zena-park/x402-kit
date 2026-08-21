@@ -8,7 +8,7 @@
  */
 
 import { maxUint256, type Address, type Hex, type PublicClient, type WalletClient } from "viem";
-import { broadcastAndConfirm, ERC20_ABI, PERMIT2_ADDRESS } from "@x402kit/core";
+import { broadcastAndConfirm, ERC20_ABI, PERMIT2_ADDRESS } from "@x402.kit/core";
 
 export interface ApprovePermit2Options {
   walletClient: WalletClient;
