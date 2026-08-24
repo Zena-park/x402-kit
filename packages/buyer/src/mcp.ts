@@ -16,7 +16,7 @@ import {
   attachMcpPayment,
   extractMcpPaymentRequired,
   extractMcpSettleResponse,
-  type PaymentPayload,
+  type McpToolResult,
 } from "@x402.kit/core";
 import { assertBuyerPolicy, createSpendTracker, preparePayment, type WrapFetchOptions } from "./wrapFetch.js";
 
@@ -55,16 +55,15 @@ export function wrapMcpClient<C extends McpClientLike>(client: C, options: WrapM
     }
 
     const accepts = required.value.accepts;
-    const prepared = await preparePayment(accepts, options, spend);
+    // The terms' resource rides inside the signed-payload envelope (as the
+    // spec's example does) so the seller's bindResource can pin it to this tool.
+    const prepared = await preparePayment(accepts, options, spend, required.value.resource);
     if ("skipped" in prepared) {
       options.onSkipped?.(prepared.skipped, accepts);
       return first;
     }
 
-    // Carry the terms' resource in the payload (as the spec's example does) so
-    // the seller's bindResource can pin the signature to this tool.
-    const payload: PaymentPayload = { ...prepared.payload, resource: required.value.resource };
-    const paid: McpCallToolParams = { ...params, _meta: attachMcpPayment(params._meta, payload) };
+    const paid: McpCallToolParams = { ...params, _meta: attachMcpPayment(params._meta, prepared.payload) };
 
     let second: unknown;
     try {
@@ -74,19 +73,29 @@ export function wrapMcpClient<C extends McpClientLike>(client: C, options: WrapM
       throw e;
     }
 
-    // A second payment-required means the seller refused (and holds the
-    // signature) — the budget stays charged, same rule as HTTP.
-    if (!extractMcpPaymentRequired(second)) {
+    // The wrapFetch rule, translated: onPaid only for a delivered result. Any
+    // isError retry result — a fresh payment-required (the seller refused and
+    // holds the signature — the budget stays charged), a facilitator outage,
+    // or a tool error — is not a payment the buyer's accounting should record.
+    const errored =
+      typeof second === "object" && second !== null && (second as McpToolResult).isError === true;
+    if (!errored) {
       options.onPaid?.(prepared.chosen, extractMcpSettleResponse(second));
     }
     return second;
   };
 
+  // Bound methods are cached so identities are stable (paid.close === paid.close)
+  // and property access does not allocate; the wrapped client keeps working when
+  // its methods are destructured.
+  const bound = new Map<PropertyKey, unknown>();
   return new Proxy(client, {
     get(target, prop, receiver) {
       if (prop === "callTool") return callTool;
       const value = Reflect.get(target, prop, receiver) as unknown;
-      return typeof value === "function" ? (value as (...a: unknown[]) => unknown).bind(target) : value;
+      if (typeof value !== "function") return value;
+      if (!bound.has(prop)) bound.set(prop, (value as (...a: unknown[]) => unknown).bind(target));
+      return bound.get(prop);
     },
   }) as C;
 }

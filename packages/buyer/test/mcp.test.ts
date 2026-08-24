@@ -136,9 +136,23 @@ describe("wrapMcpClient", () => {
     expect(onSkipped.mock.calls.at(-1)![0]).toMatch(/maxTotalAmount/);
   });
 
-  it("passes every other client method through", async () => {
+  it("does not record a payment when the retry comes back as an error result", async () => {
+    const outage: McpToolResult = {
+      isError: true,
+      content: [{ type: "text", text: JSON.stringify({ error: "facilitator_unavailable", retryAfter: 5 }) }],
+    };
+    const client = fakeClient(paymentRequired(), outage);
+    const onPaid = vi.fn();
+    const paid = wrapMcpClient(client, { signer, maxAmount: "1000000", allowAnyAsset: true, onPaid });
+
+    expect(await paid.callTool(call)).toBe(outage);
+    expect(onPaid).not.toHaveBeenCalled(); // nothing settled — accounting stays clean
+  });
+
+  it("passes every other client method through, with stable method identity", async () => {
     const client = fakeClient(plainResult);
     const paid = wrapMcpClient(client, { signer, maxAmount: "1", allowAnyAsset: true });
     expect(await paid.listTools()).toEqual({ tools: [] });
+    expect(paid.listTools).toBe(paid.listTools); // bound once, cached
   });
 });
