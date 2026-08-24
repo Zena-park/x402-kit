@@ -12,10 +12,10 @@
  * the response by the time it captures.)
  *
  * BUYER (agent) — the same `wrapFetch` as seller-paid-api. `maxAmount` bounds
- * the CAP (the worst case); once the receipt reports the actual, the cumulative
- * budget is trued up to it — which is what lets the second call below go
- * through: a 9,000 KRW budget cannot hold two 5,000 KRW caps, but it holds one
- * cap plus the 321 KRW the first call actually cost.
+ * the CAP (the worst case), and the cumulative budget is charged the full cap,
+ * not the 321 KRW actual — the seller-reported actual is for your books only,
+ * since a seller could claim any figure. That is why the second call below is
+ * refused: a 9,000 KRW budget holds one 5,000 KRW cap, never two.
  *
  * Run: examples/run.sh metered-api (boots the local world, then runs this).
  */
@@ -71,7 +71,7 @@ async function main(): Promise<void> {
   const pay = wrapFetch(fetch, {
     signer: buyer,
     maxAmount: "5000000000", // bounds the CAP the agent will sign
-    maxTotalAmount: "9000000000", // the whole budget — less than two caps, more than one cap + the first actual
+    maxTotalAmount: "9000000000", // the whole budget — deliberately less than two caps: the second call must be refused
     assets: [TOKEN],
     clock: chainNow, // demo only: sign against anvil's clock
     onPaid: (_t, settlement) => console.log(`buyer: paid ${fmt(BigInt(settlement?.amount ?? "0"))} of a ${fmt(BigInt(terms.amount))} cap`),
@@ -82,9 +82,10 @@ async function main(): Promise<void> {
   console.log(`GET /v1/answer → ${res.status} ${JSON.stringify(await res.json())}`);
   console.log(`buyer balance: ${fmt(before)} → ${fmt(await balanceOf(buyer.address))} — the unused part of the cap never moved`);
 
-  // Without the true-up the second 5,000 KRW cap would not fit (5,000 + 5,000 > 9,000); with it, 321 + 5,000 does
+  // The budget counts the signed cap, not the actual: 5,000 + 5,000 > 9,000, so
+  // the wrapper refuses to sign and hands back the seller's 402 untouched.
   const second = await pay(`http://127.0.0.1:${PORT}/v1/answer`);
-  console.log(`second call → ${second.status} (budget trued up to the actual, not the cap)`);
+  console.log(`second call → ${second.status} (budget counts the cap, not the actual — a second 5,000 cap does not fit)`);
 
   server.close();
 }

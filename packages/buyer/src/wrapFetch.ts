@@ -39,8 +39,11 @@ export interface WrapFetchOptions {
    * Cumulative cap across EVERY payment this wrapper (or axios instance)
    * signs, in atomic units of the allowlisted asset(s). `maxAmount` bounds a
    * single payment; a seller that answers 402 to every request — or an agent
-   * loop that keeps calling — is bounded only by this. Optional, but an
-   * unattended agent should set it.
+   * loop that keeps calling — is bounded only by this. The budget counts what
+   * was SIGNED: for upto that is the full cap, and the seller-reported actual
+   * in PAYMENT-RESPONSE (`onPaid`'s `settlement.amount`) is for out-of-band
+   * accounting only, never refunded to the budget. Optional, but an unattended
+   * agent should set it.
    */
   maxTotalAmount?: string;
   /**
@@ -65,9 +68,8 @@ export interface WrapFetchOptions {
   networks?: string[];
   /**
    * Schemes this buyer can pay with. Default: [exactScheme, uptoScheme].
-   * For upto the terms' amount is a CAP — `maxAmount` bounds the cap (the
-   * worst case), and the cumulative budget is trued up to the actual charge
-   * once the seller's PAYMENT-RESPONSE reports it.
+   * For upto the terms' amount is a CAP — `maxAmount` bounds it, and see
+   * `maxTotalAmount` for how caps are counted against the budget.
    */
   schemes?: AnySchemeHandler[];
   /**
@@ -299,8 +301,6 @@ export async function preparePayment(
     // have charged. PAYMENT-RESPONSE is authored by the seller; refunding on
     // its say-so would let a hostile seller report amount:"0" every time and
     // void maxTotalAmount — the one guard that exists against that seller.
-    // For upto the reservation is the cap (the worst case authorized); the
-    // actual charge is visible via onPaid(settlement) for out-of-band accounting.
     refund: () => spend.refund(amount),
   };
 }
