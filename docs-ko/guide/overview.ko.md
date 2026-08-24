@@ -16,14 +16,18 @@
 쪽은 판매자의 API와 facilitator뿐입니다.
 
 ```
-구매자                                  판매자                       facilitator            체인
+buyer                                   seller                       facilitator            chain
   │── GET /premium ─────────────────────▶│                                │                    │
-  │◀── 402 + PAYMENT-REQUIRED ───────────│  "토큰 X 10000을 주소 Z로"     │                    │
-  │   (조건에 서명 — tx 없음, 가스 없음) │                                │                    │
-  │── GET /premium + PAYMENT-SIGNATURE ─▶│── POST /verify, /settle ──────▶│── 이체 tx ────────▶│
-  │                                      │◀── tx hash ────────────────────│   (가스 지불)      │
-  │◀── 200 + PAYMENT-RESPONSE ───────────│  핸들러 실행; 헤더 = tx hash   │                    │
+  │◀── 402 + PAYMENT-REQUIRED ───────────│  "10000 of token X to addr Z"  │                    │
+  │   (sign the terms — no tx, no gas)   │                                │                    │
+  │── GET /premium + PAYMENT-SIGNATURE ─▶│── POST /verify, /settle ──────▶│── transfer tx ────▶│
+  │                                      │◀── tx hash ────────────────────│   (pays the gas)   │
+  │◀── 200 + PAYMENT-RESPONSE ───────────│  handler ran; header = tx hash │                    │
 ```
+
+<!-- 다이어그램은 영문 원본 그대로 유지할 것: 웹폰트에서 한글 폭이 ASCII의 정수배가
+아니라 한글을 섞으면 세로줄 정렬이 깨진다. 흐름은 바로 위 문단이 한국어로 설명한다. -->
+(buyer = 구매자, seller = 판매자, chain = 체인)
 
 - 토큰은 온체인 이체 한 번으로 **구매자 → 판매자의 `payTo`로** 이동합니다. facilitator를 거치지 않으며, facilitator는 가스만 냅니다.
 - `wrapFetch`(구매자) = "402를 잡아 서명하고 다시 보내기". `paywall`(판매자) = "402를 보내고, 서명을 전달하고, 결제 후 서비스 제공". facilitator = "검증, 브로드캐스트, 가스 지불".
