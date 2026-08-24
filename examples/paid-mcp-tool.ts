@@ -45,7 +45,7 @@ async function main(): Promise<void> {
         facilitator: FACILITATOR,
       },
       { description: "A paid market report", inputSchema: { ticker: z.string() } },
-      async ({ ticker }) => ({
+      async ({ ticker }: { ticker: string }) => ({
         content: [{ type: "text" as const, text: `${ticker}: buy low, sell high.` }],
       }),
     ),

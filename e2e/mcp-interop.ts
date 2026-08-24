@@ -18,7 +18,12 @@ import { z } from "zod";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
-import { createPaymentWrapper, createx402MCPClient, x402ResourceServer } from "@x402/mcp";
+import {
+  createPaymentWrapper,
+  createx402MCPClient,
+  x402ResourceServer,
+  type PaymentRequirements as OfficialPaymentRequirements,
+} from "@x402/mcp";
 import { HTTPFacilitatorClient } from "@x402/core/server";
 import { ExactEvmScheme as ExactEvmClientScheme } from "@x402/evm/exact/client";
 import { ExactEvmScheme as ExactEvmServerScheme } from "@x402/evm/exact/server";
@@ -72,7 +77,11 @@ async function legC(): Promise<void> {
   const resourceServer = new x402ResourceServer(new HTTPFacilitatorClient({ url: FACILITATOR_URL }));
   resourceServer.register("eip155:31337", new ExactEvmServerScheme());
   await resourceServer.initialize();
-  const withPayment = createPaymentWrapper(resourceServer, { accepts: [terms] });
+  // The kit's PaymentRequirements and the official type are the same wire
+  // shape; the cast is the package boundary, and the run itself is the proof.
+  const withPayment = createPaymentWrapper(resourceServer, {
+    accepts: [terms as unknown as OfficialPaymentRequirements],
+  });
 
   const server = new McpServer({ name: "official-seller", version: "0.0.0" });
   server.registerTool(

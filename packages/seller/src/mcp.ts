@@ -45,6 +45,15 @@ export type McpToolHandler<Args = Record<string, unknown>> = (
   extra: McpHandlerExtra,
 ) => McpToolResult | Promise<McpToolResult>;
 
+/**
+ * The wrapped handler's type — deliberately loose so the tuple satisfies every
+ * `registerTool` overload of the MCP SDK (schema-less tools get `(extra)`,
+ * schema-carrying ones `(args, extra)`) without this package depending on the
+ * SDK's types. The safety that matters lives on the INNER handler you write.
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type McpRegisteredHandler = (...call: any[]) => Promise<any>;
+
 export interface McpPaywallOptions extends Omit<PaywallOptions, "resource" | "settle"> {
   /** Resource named in the payment terms. Default: { url: "mcp://tool/<name>" } */
   resource?: ResourceInfo;
@@ -80,7 +89,7 @@ export function paidTool<Args, Config>(
   options: McpPaywallOptions,
   config: Config,
   handler: McpToolHandler<Args>,
-): [name: string, config: Config, handler: McpToolHandler<Args>] {
+): [name: string, config: Config, handler: McpRegisteredHandler] {
   const { resource: resourceOption, ...paywallOptions } = options;
   const resource: ResourceInfo = resourceOption ?? { url: mcpToolResourceUrl(name) };
   const paywall = createPaywall(paywallOptions);
@@ -134,7 +143,7 @@ export function paidTool<Args, Config>(
     return buildMcpPaymentRequired(
       buildPaymentRequired({ resource, accepts: options.accepts, error: "Settlement failed" }),
     );
-  }) as McpToolHandler<Args>;
+  }) satisfies McpRegisteredHandler;
 
   return [name, config, wrapped];
 }

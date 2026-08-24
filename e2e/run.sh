@@ -16,8 +16,11 @@ TOKEN_ADDRESS="$TOKEN" npx tsx "$ROOT/e2e/permit2.ts"
 echo
 TOKEN_ADDRESS="$TOKEN" npx tsx "$ROOT/e2e/upto.ts"
 echo
-TOKEN_ADDRESS="$TOKEN" npx tsx "$ROOT/e2e/schedule.ts"
-echo
 TOKEN_ADDRESS="$TOKEN" npx tsx "$ROOT/e2e/mcp.ts"
 echo
+# interop before schedule: the official client signs against the WALL clock,
+# and schedule.ts warps anvil time forward (the kit clients sign against
+# chain time, so only the oracle cares about ordering)
 TOKEN_ADDRESS="$TOKEN" npx tsx "$ROOT/e2e/mcp-interop.ts"
+echo
+TOKEN_ADDRESS="$TOKEN" npx tsx "$ROOT/e2e/schedule.ts"
