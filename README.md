@@ -46,9 +46,8 @@ Prefer to watch before reading? `npm run playground`. Building something
 specific? Copy the closest recipe from [`examples/`](examples/README.md).
 Each package's `README.md` is the option-by-option reference.
 
-한국어 가이드는 [docs-ko/guide/overview.ko.md](docs-ko/guide/overview.ko.md)에서
-시작하세요 — 역할별 가이드 전부와 [`playground/README.ko.md`](playground/README.ko.md)가
-한국어로 제공됩니다.
+All guides are also available in Korean (한국어) — start at
+[docs-ko/guide/overview.ko.md](docs-ko/guide/overview.ko.md).
 
 ## Install
 
