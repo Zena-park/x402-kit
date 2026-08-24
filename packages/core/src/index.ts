@@ -31,6 +31,20 @@ export {
   decodeSettleResponseSafe,
 } from "./codec.js";
 
+// Wire codec (transports-v2/mcp.md) — plain-JSON objects in tool results / _meta
+export {
+  MCP_META_PAYMENT,
+  MCP_META_PAYMENT_RESPONSE,
+  mcpToolResourceUrl,
+  buildMcpPaymentRequired,
+  extractMcpPaymentRequired,
+  extractMcpPayment,
+  attachMcpPayment,
+  attachMcpSettleResponse,
+  extractMcpSettleResponse,
+} from "./mcpCodec.js";
+export type { McpToolResult } from "./mcpCodec.js";
+
 // Runtime validation (zod) — spec-exact, stricter on amount/network
 export {
   PaymentRequirementsSchema,

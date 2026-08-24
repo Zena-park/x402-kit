@@ -96,6 +96,55 @@ and refuses a schedule whose first window already closed. Persist
 `scheduleEntryId` with each successful charge so the cron never resubmits a
 settled installment. See `playground/` for the full runnable story.
 
+## Paid MCP tools
+
+The same paywall over the Model Context Protocol — wrap one `registerTool`
+tuple and the tool charges per call (spec `transports-v2/mcp.md`, wire-
+compatible with the official `@x402/mcp` SDK):
+
+```ts
+import { paidTool } from "@x402.kit/seller/mcp";
+
+server.registerTool(...paidTool("market_report",
+  { accepts: [terms], facilitator },              // PaywallOptions, resource defaults to mcp://tool/<name>
+  { description: "A paid market report", inputSchema: { ticker: z.string() } },
+  async ({ ticker }) => ({ content: [{ type: "text", text: report(ticker) }] }),
+));
+```
+
+A call without payment gets an `isError` result carrying the terms; a paid
+call runs the handler and attaches the receipt in
+`_meta["x402/payment-response"]`. `settle: "sync"` (default) or
+`"after-handler"` — where a definite settlement failure after execution
+withholds the tool's content (the atomicity HTTP cannot offer). For `upto`,
+the handler names the actual via
+`_meta: { "x402kit/settlement-overrides": { amount } }` on its result — the
+MCP twin of the `Settlement-Overrides` header. `@modelcontextprotocol/sdk` is
+not a dependency (structural typing, like the HTTP adapters). Runnable:
+`examples/paid-mcp-tool.ts`.
+
+## POS terminal (authorize / capture)
+
+The in-person recipe as a preset — 402-as-QR, instant authorization at the
+counter, on-chain capture off the customer's critical path:
+
+```ts
+import { createPosTerminal } from "@x402.kit/seller/pos";
+
+const pos = createPosTerminal({ facilitator });
+const order = pos.order(terms, { url: "pos://lane-1/order-42" });
+show(order.qr);                                   // the 402 terms, wire-encoded
+const auth = await order.authorize(wireFromPhone); // free, instant, replay-guarded
+if (auth.authorized) { handOverTheGoods(); await auth.capture(); }
+```
+
+`authorize` runs the full paywall core: the same signature presented at a
+second lane is refused (`authorization_already_used`) before any facilitator
+call, terms the terminal never offered are rejected, and a facilitator outage
+reads as `{ authorized: false, reason: "facilitator_unavailable" }` — never a
+throw. `capture({ amount })` settles less than the signed cap (`upto`); to
+VOID, simply never capture. Runnable: `examples/pos-terminal.ts`.
+
 Catch a misconfigured route at boot: `await createPaywall(options).verifySupported()`
 asserts every `accepts` entry is advertised by the facilitator's `/supported`.
 

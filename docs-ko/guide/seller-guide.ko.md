@@ -212,6 +212,28 @@ export default async function handler(request: Request): Promise<Response> {
 hono/express/fastify는 **의존성이 아닙니다** — 타입만 구조적으로 맞추므로, 설치한
 버전이 무엇이든 동작합니다.
 
+### MCP 도구 — HTTP 없이 같은 paywall
+
+에이전트에게 MCP(Model Context Protocol)로 도구를 판다면, `registerTool`
+튜플 하나를 감싸는 것으로 호출당 과금이 붙습니다:
+
+```ts
+import { paidTool } from "@x402.kit/seller/mcp";
+
+server.registerTool(...paidTool("market_report",
+  { accepts: [terms], facilitator },   // 같은 옵션; resource 기본값은 mcp://tool/<이름>
+  { description: "A paid market report", inputSchema: { ticker: z.string() } },
+  async ({ ticker }) => ({ content: [{ type: "text", text: report(ticker) }] }),
+));
+```
+
+조건은 `isError` 도구 결과로 나가고, 결제는 `_meta["x402/payment"]`로 들어오며,
+영수증은 `_meta["x402/payment-response"]`로 나갑니다 — 이 가이드의 나머지 전부
+(조건, facilitator, 리플레이 가드, 결과 `_meta`의
+`"x402kit/settlement-overrides"` 오버라이드를 통한 `upto`,
+`settle: "after-handler"`)가 그대로 적용됩니다. 공식 `@x402/mcp` SDK와 양방향
+와이어 호환. 실행 예시: `examples/paid-mcp-tool.ts`.
+
 ---
 
 ## 3. Facilitator 연결
@@ -286,6 +308,31 @@ paywall({
   못합니다(헤더가 이미 전송됨) — `onSettled`에서 읽으세요.
 - `"sync"` 외의 모든 모드에서는 상품이 먼저 나가고 체인이 nonce를 나중에 소비합니다.
   이때 "서명 하나 = 배송 하나"를 보장하는 것이 아래의 리플레이 가드입니다.
+
+### 대면 결제: POS 프리셋
+
+승인/캡처 분리를 카운터용으로 포장한 프리셋입니다 — HTTP 서버 없이, 402는 QR로
+나가고 서명된 페이로드는 아무 채널로나 돌아옵니다:
+
+```ts
+import { createPosTerminal } from "@x402.kit/seller/pos";
+
+const pos = createPosTerminal({ facilitator });
+const order = pos.order(terms, { url: "pos://lane-1/order-42" });
+show(order.qr);                                    // 402 조건, 와이어 인코딩
+const auth = await order.authorize(wireFromPhone); // 승인 — 무료, 즉시
+if (auth.authorized) {
+  handOverTheGoods();
+  await auth.capture();                            // 캡처 — 온체인, 나중에
+}
+```
+
+`authorize`는 paywall 코어 전체를 돌리므로, 같은 서명을 두 번째 레인에 제시하면
+facilitator 호출 없이 거부되고, facilitator 장애는 throw가 아니라
+`{ authorized: false, reason }`으로 읽힙니다. `capture({ amount })`는 `upto`
+조건에서 상한 이하 실액을 정산하고(팁 차감, 계량 과금), **무효화(void)는 그냥
+capture를 안 하면 끝**입니다 — 체인에 아무것도 닿지 않았으니까요. 실행 예시:
+`examples/pos-terminal.ts`.
 
 ---
 

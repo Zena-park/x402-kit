@@ -1,6 +1,6 @@
 {
   "name": "@x402.kit/core",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "x402 v2 protocol core — spec-exact types, wire codec, pluggable schemes, verification pipeline. Token-agnostic, framework-free.",
   "license": "Apache-2.0",
   "author": "Zena-park",

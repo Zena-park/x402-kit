@@ -213,6 +213,29 @@ is empty; the tx hash arrives via `onSettled` (or `capture()`'s return value).
 hono/express/fastify are **not dependencies** — the adapters are typed
 structurally, so any installed version works.
 
+### MCP tools — the same paywall, no HTTP
+
+Selling to agents over the Model Context Protocol? Wrap one `registerTool`
+tuple and the tool charges per call:
+
+```ts
+import { paidTool } from "@x402.kit/seller/mcp";
+
+server.registerTool(...paidTool("market_report",
+  { accepts: [terms], facilitator },   // same options; resource defaults to mcp://tool/<name>
+  { description: "A paid market report", inputSchema: { ticker: z.string() } },
+  async ({ ticker }) => ({ content: [{ type: "text", text: report(ticker) }] }),
+));
+```
+
+The terms travel as an `isError` tool result, the payment arrives in
+`_meta["x402/payment"]`, and the receipt leaves in
+`_meta["x402/payment-response"]` — everything else in this guide (terms,
+facilitator, replay guard, `upto` via a result-`_meta`
+`"x402kit/settlement-overrides"` override, `settle: "after-handler"`) applies
+unchanged. Wire-compatible with the official `@x402/mcp` SDK on both sides.
+Runnable: `examples/paid-mcp-tool.ts`.
+
 ---
 
 ## 3. Connecting the facilitator
@@ -291,6 +314,31 @@ Caveats:
 - In every mode but `"sync"` the goods leave before the chain consumes the
   nonce. What makes "one signature = one delivery" hold there is the replay
   guard below.
+
+### In person: the POS preset
+
+The approve/capture split, packaged for a counter — no HTTP server, the 402
+travels as a QR and the signed payload comes back over any channel:
+
+```ts
+import { createPosTerminal } from "@x402.kit/seller/pos";
+
+const pos = createPosTerminal({ facilitator });
+const order = pos.order(terms, { url: "pos://lane-1/order-42" });
+show(order.qr);                                    // the 402 terms, wire-encoded
+const auth = await order.authorize(wireFromPhone); // AUTHORIZE — free, instant
+if (auth.authorized) {
+  handOverTheGoods();
+  await auth.capture();                            // CAPTURE — on-chain, later
+}
+```
+
+`authorize` runs the full paywall core, so the same signature presented at a
+second lane is refused before any facilitator call, and a facilitator outage
+reads as `{ authorized: false, reason }`, never a throw. `capture({ amount })`
+settles below the cap for `upto` terms (tips-down, metered charges); to VOID,
+simply never capture — nothing has touched the chain. Runnable:
+`examples/pos-terminal.ts`.
 
 ---
 

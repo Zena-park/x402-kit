@@ -86,6 +86,14 @@ npm run e2e         # the same world as an automated harness
 - **Subscriptions and installments** with no new on-chain code: the buyer
   pre-signs one `exact` payment per billing window (`signPaymentSchedule`), the
   seller settles each when due (`dueEntries` + `chargeScheduled`).
+- **A POS preset.** In-person authorize/capture (`createPosTerminal` —
+  `@x402.kit/seller/pos`): 402-as-QR, instant replay-guarded authorization at
+  the counter, on-chain capture off the customer's critical path.
+- **Paid MCP tools.** The same payments over the Model Context Protocol: wrap
+  a tool with `paidTool` (`@x402.kit/seller/mcp`), wrap the agent's MCP client
+  with `wrapMcpClient` (`@x402.kit/buyer/mcp`) — same caps, schemes and
+  facilitator as HTTP, and wire-compatible with the official `@x402/mcp` SDK
+  (proven by an interop e2e in both directions).
 - **A facilitator that refuses to be a free gas relay.** It won't start without
   an API key, a `payTo` allowlist, or an explicit opt-out; rate limits, gas
   ceilings, and token allowlists are on by default.
@@ -94,7 +102,6 @@ npm run e2e         # the same world as an automated harness
 
 - Variable-amount recurring, enforced by the payer's own smart account
   (spend-permissions-compatible).
-- POS preset · MCP transport.
 
 ## License
 

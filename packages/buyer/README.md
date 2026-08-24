@@ -50,6 +50,12 @@ const res = await paidFetch("https://api.example.com/premium");
   on the token).
 - Axios? `import { attachX402 } from "@x402.kit/buyer/axios"; attachX402(axios, { signer, maxAmount, assets })`
   — same safety model, handling axios's 402-as-rejection and retrying once.
+- MCP? `import { wrapMcpClient } from "@x402.kit/buyer/mcp"` wraps any MCP
+  client's `callTool` with the same caps: a payment-required tool result is
+  signed under `maxAmount`/`maxTotalAmount`/`assets` and retried once with the
+  payment in `_meta["x402/payment"]`; the receipt arrives via `onPaid`, and a
+  refusal hands the seller's result back untouched (`onSkipped` says why).
+  The SDK is not a dependency — anything with `callTool(params)` wraps.
 - Retry safely by re-sending the SAME signed payload (same nonce) — the
   facilitator dedupes on the signed on-chain nonce, so a resend settles once.
   A fresh signature is a genuinely new payment (there is no unsigned

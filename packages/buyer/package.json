@@ -1,6 +1,6 @@
 {
   "name": "@x402.kit/buyer",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Buyer-side x402 client — wrapFetch catches 402s, signs within a hard spending cap, retries once. Includes low-level signPayment for QR/POS flows.",
   "license": "Apache-2.0",
   "author": "Zena-park",
@@ -32,6 +32,10 @@
     "./axios": {
       "types": "./dist/axios.d.ts",
       "import": "./dist/axios.js"
+    },
+    "./mcp": {
+      "types": "./dist/mcp.d.ts",
+      "import": "./dist/mcp.js"
     }
   },
   "files": [
@@ -48,7 +52,7 @@
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "@x402.kit/core": "^0.1.0",
+    "@x402.kit/core": "^0.2.0",
     "viem": "^2.21.0"
   }
 }

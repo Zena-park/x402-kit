@@ -22,8 +22,10 @@ import {
   resolveHandler,
   sameAddress,
   type AnySchemeHandler,
+  type PaymentPayload,
   type PaymentRequirements,
   type PaymentSigner,
+  type ResourceInfo,
   type SettleResponse,
 } from "@x402.kit/core";
 import { DEFAULT_BUYER_SCHEMES, signPayment } from "./signPayment.js";
@@ -259,7 +261,9 @@ export type PreparedPayment =
   | {
       chosen: PaymentRequirements;
       amount: bigint;
-      /** Base64 PAYMENT-SIGNATURE header value */
+      /** The signed payment as an object — MCP sends this as plain JSON in _meta */
+      payload: PaymentPayload;
+      /** The SAME payload, base64-encoded for the PAYMENT-SIGNATURE header */
       header: string;
       /** Give the budget back — the signature never reached the seller */
       refund(): void;
@@ -274,6 +278,8 @@ export async function preparePayment(
   accepts: PaymentRequirements[],
   options: WrapFetchOptions,
   spend: SpendTracker,
+  /** Pin the payment to a resource (payload.resource) — both representations carry it */
+  resource?: ResourceInfo,
 ): Promise<PreparedPayment> {
   const now = options.clock ? await options.clock() : nowSeconds();
   const chosen = selectPayable(accepts, options);
@@ -282,7 +288,7 @@ export async function preparePayment(
   if (!spend.reserve(amount)) {
     return { skipped: `amount ${chosen.amount} would exceed maxTotalAmount (spent ${spend.spent()})` };
   }
-  const payload = await signPayment(chosen, {
+  const signed = await signPayment(chosen, {
     signer: options.signer,
     ...(options.schemes ? { schemes: options.schemes } : {}),
     now,
@@ -293,9 +299,11 @@ export async function preparePayment(
     ...(options.permit2Address ? { permit2Address: options.permit2Address } : {}),
     ...(options.uptoPermit2Proxy ? { uptoPermit2Proxy: options.uptoPermit2Proxy } : {}),
   });
+  const payload: PaymentPayload = resource ? { ...signed, resource } : signed;
   return {
     chosen,
     amount,
+    payload,
     header: encodePaymentPayload(payload),
     // The budget counts what was SIGNED, never what the seller later claims to
     // have charged. PAYMENT-RESPONSE is authored by the seller; refunding on
