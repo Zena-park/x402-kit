@@ -69,5 +69,6 @@ First public release, published on npm as `@x402.kit/*`.
 - Facilitator applies the `minAmount` floor at settle, checks auth before
   rate limiting, and supports `trustProxy`.
 
-[Unreleased]: https://github.com/Zena-park/x402-kit/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/Zena-park/x402-kit/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/Zena-park/x402-kit/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/Zena-park/x402-kit/releases/tag/v0.1.0
