@@ -1,12 +1,19 @@
 # Overview — who runs what
 
+> 한국어: [docs-ko/guide/overview.ko.md](../docs-ko/guide/overview.ko.md)
+
 Read this page first, then pick your role's guide at the bottom.
 
 ## 1. One payment
 
-`402 Payment Required` is an HTTP status code, like 404. A **server sends it to
-a client**. So the buyer is a client (an agent script, a browser tab, a cron
-job); the servers that must be running are the seller's API and the facilitator.
+One payment is a plain HTTP exchange: the buyer calls a paid endpoint, the
+seller answers `402 Payment Required` with the terms, the buyer signs them —
+no transaction, no gas — and retries, and the seller has the facilitator
+verify the signature and settle it on-chain before serving the response.
+
+Note the direction: a 402 goes from a **server to a client**. So the buyer is
+a client (an agent script, a browser tab, a cron job); the only servers that
+must be running are the seller's API and the facilitator.
 
 ```
 buyer                                   seller                       facilitator            chain

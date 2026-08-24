@@ -42,7 +42,12 @@ who runs what, and which key each role holds. Then pick your role:
 | Running an **API that charges per call** (AI/LLM endpoint, data feed, premium content) | [docs/seller-guide.md](docs/seller-guide.md) |
 | **Operating a facilitator** (you pay the gas) | [docs/operator-guide.md](docs/operator-guide.md) |
 
+Prefer to watch before reading? `npm run playground`. Building something
+specific? Copy the closest recipe from [`examples/`](examples/README.md).
 Each package's `README.md` is the option-by-option reference.
+
+All guides are also available in Korean (한국어) — start at
+[docs-ko/guide/overview.ko.md](docs-ko/guide/overview.ko.md).
 
 ## Install
 

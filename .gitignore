@@ -4,9 +4,8 @@ dist/
 .env.*
 !.env.example
 
-# Korean working notes. The published docs are in docs/ and are English-only;
-# docs-ko/ is a personal scratch space and is deliberately not tracked.
-docs-ko/
+# Korean design working notes — scratch space, never published
+docs-ko-design/
 
 # build metadata / OS
 *.tsbuildinfo

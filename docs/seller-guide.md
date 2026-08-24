@@ -122,8 +122,8 @@ facilitator — it fails locally via `onSettled`. Hook-style express/fastify run
 before your handler, so they cannot use this — use hono, next, or the core. On
 plain node:http drive the core yourself and `capture({ amount })` **before**
 `res.end()` (see `examples/metered-api.ts`): the node `withPaywall` wrapper
-captures after your handler has ended the response, so the receipt — which the
-buyer needs to true its budget up to the actual — would not reach them.
+captures after your handler has ended the response, so the receipt — the
+seller-reported actual the buyer records via `onPaid` — would not reach them.
 
 ### Offering several options
 
