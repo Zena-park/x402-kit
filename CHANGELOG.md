@@ -24,6 +24,9 @@ SDK (interop e2e pays in both directions through the kit facilitator).
   under the same caps vocabulary as `wrapFetch` (one paid retry, budget counts
   what was signed).
 - `examples/paid-mcp-tool.ts` and two e2e scenarios (`mcp`, `mcp-interop`).
+- `@x402.kit/seller/pos` — `createPosTerminal()`: the in-person
+  authorize/capture recipe as a preset — QR terms, replay-guarded
+  `authorize(wire)`, `capture({ amount })`, void by simply not capturing.
 
 ### Changed
 - `createPaywall` now also exposes the transport-free `checkPayment()` core;

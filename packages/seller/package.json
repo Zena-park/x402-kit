@@ -53,6 +53,10 @@
     "./mcp": {
       "types": "./dist/mcp.d.ts",
       "import": "./dist/mcp.js"
+    },
+    "./pos": {
+      "types": "./dist/pos.d.ts",
+      "import": "./dist/pos.js"
     }
   },
   "files": [
