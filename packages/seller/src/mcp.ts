@@ -105,8 +105,19 @@ export function paidTool<Args, Config>(
     // The HTTP transport's size guard, applied to the parsed object: an
     // oversized "payment" is refused (null fails schema validation →
     // invalid_payload) before schema work and before it could ever be
-    // forwarded to the facilitator.
-    const payment = raw !== undefined && JSON.stringify(raw).length > MAX_PAYMENT_HEADER_BYTES ? null : raw;
+    // forwarded to the facilitator. Measured on the raw JSON, so the cap is
+    // slightly more permissive than HTTP's base64 measurement — both bound
+    // the same processing cost. An in-process transport can hand over values
+    // JSON never could (circular references, functions) — a failed or
+    // undefined measurement is refused the same way, never thrown.
+    let payment: unknown = raw;
+    if (raw !== undefined) {
+      try {
+        if ((JSON.stringify(raw)?.length ?? Infinity) > MAX_PAYMENT_HEADER_BYTES) payment = null;
+      } catch {
+        payment = null;
+      }
+    }
 
     const decision = await paywall.checkPayment(payment, resource, PAYMENT_REQUIRED_ERROR);
     if (!decision.paid) {

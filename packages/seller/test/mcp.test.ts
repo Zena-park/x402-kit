@@ -103,6 +103,20 @@ describe("paidTool", () => {
     expect(facilitator.verify).not.toHaveBeenCalled();
   });
 
+  it("refuses an unstringifiable payment (in-process transport) instead of throwing", async () => {
+    const { wrapped, facilitator } = register();
+    const circular: Record<string, unknown> = { x402Version: 2 };
+    circular.self = circular; // JSON.stringify throws
+    for (const hostile of [circular, () => {}]) {
+      const result = await wrapped({}, { _meta: { [MCP_META_PAYMENT]: hostile } });
+      const required = extractMcpPaymentRequired(result);
+      expect(required?.ok).toBe(true);
+      if (!required?.ok) return;
+      expect(required.value.error).toBe("invalid_payload");
+    }
+    expect(facilitator.verify).not.toHaveBeenCalled();
+  });
+
   it("sync: verifies, settles, runs the handler, and attaches the receipt", async () => {
     const { wrapped, handler, facilitator } = register();
     const result = (await wrapped({ ticker: "AAPL" }, paidExtra())) as McpToolResult;
