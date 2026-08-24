@@ -22,6 +22,7 @@ import {
   resolveHandler,
   sameAddress,
   type AnySchemeHandler,
+  type PaymentPayload,
   type PaymentRequirements,
   type PaymentSigner,
   type SettleResponse,
@@ -259,7 +260,9 @@ export type PreparedPayment =
   | {
       chosen: PaymentRequirements;
       amount: bigint;
-      /** Base64 PAYMENT-SIGNATURE header value */
+      /** The signed payment as an object — MCP sends this as plain JSON in _meta */
+      payload: PaymentPayload;
+      /** Base64 PAYMENT-SIGNATURE header value — the same payload, HTTP-encoded */
       header: string;
       /** Give the budget back — the signature never reached the seller */
       refund(): void;
@@ -296,6 +299,7 @@ export async function preparePayment(
   return {
     chosen,
     amount,
+    payload,
     header: encodePaymentPayload(payload),
     // The budget counts what was SIGNED, never what the seller later claims to
     // have charged. PAYMENT-RESPONSE is authored by the seller; refunding on

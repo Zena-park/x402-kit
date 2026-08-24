@@ -49,6 +49,10 @@
     "./fastify": {
       "types": "./dist/fastify.d.ts",
       "import": "./dist/fastify.js"
+    },
+    "./mcp": {
+      "types": "./dist/mcp.d.ts",
+      "import": "./dist/mcp.js"
     }
   },
   "files": [

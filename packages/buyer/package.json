@@ -32,6 +32,10 @@
     "./axios": {
       "types": "./dist/axios.d.ts",
       "import": "./dist/axios.js"
+    },
+    "./mcp": {
+      "types": "./dist/mcp.d.ts",
+      "import": "./dist/mcp.js"
     }
   },
   "files": [
