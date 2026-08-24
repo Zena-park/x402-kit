@@ -11,7 +11,7 @@ one thing. Start from the file closest to what you're building.
 |---|---|---|
 | `seller-paid-api.ts` | A paid API + an agent that pays for it (`withPaywall` · `wrapFetch`) | ✅ |
 | `metered-api.ts` | A usage-metered API — `upto`: the buyer signs a cap, the handler sets `Settlement-Overrides`, the actual is settled | ✅ |
-| `pos-terminal.ts` | In-person POS — authorize (`verify`) / capture (`settle`) split, 402-as-QR | ✅ |
+| `pos-terminal.ts` | In-person POS — the `createPosTerminal` preset: 402-as-QR, replay-guarded authorize, capture later | ✅ |
 | `subscription.ts` | Fixed subscription / installments via pre-signed schedules | ✅ |
 | `paid-mcp-tool.ts` | A paid MCP tool — an agent pays per tool call (`paidTool` · `wrapMcpClient`) | ✅ |
 | `dapp-wallet.ts` | Browser wallet → `PaymentSigner` adapter (wagmi/viem) | type-checked (browser) |

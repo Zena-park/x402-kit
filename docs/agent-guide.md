@@ -109,6 +109,24 @@ attachX402(axiosInstance, { signer, maxAmount, maxTotalAmount, assets });
 
 Same options, same gates.
 
+### Paid MCP tools
+
+An agent that consumes tools over the Model Context Protocol pays the same
+way — wrap the MCP client once:
+
+```ts
+import { wrapMcpClient } from "@x402.kit/buyer/mcp";
+
+const client = wrapMcpClient(mcpClient, { signer, maxAmount, maxTotalAmount, assets });
+const result = await client.callTool({ name: "market_report", arguments: { ticker: "TKRW" } });
+```
+
+Same options, same gates: a payment-required tool result is signed under the
+caps and retried once with the payment in `_meta["x402/payment"]`; the receipt
+arrives via `onPaid`; a refusal hands the seller's result back untouched and
+`onSkipped` says why. Anything with `callTool(params)` wraps — the MCP SDK is
+not a dependency. Runnable: `examples/paid-mcp-tool.ts`.
+
 ---
 
 ## 3. Permit2 tokens: the one transaction

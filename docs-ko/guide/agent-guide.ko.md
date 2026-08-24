@@ -107,6 +107,24 @@ attachX402(axiosInstance, { signer, maxAmount, maxTotalAmount, assets });
 
 옵션도 게이트도 동일합니다.
 
+### 유료 MCP 도구
+
+MCP(Model Context Protocol)로 도구를 쓰는 에이전트도 같은 방식으로 결제합니다 —
+MCP 클라이언트를 한 번 감싸면 됩니다:
+
+```ts
+import { wrapMcpClient } from "@x402.kit/buyer/mcp";
+
+const client = wrapMcpClient(mcpClient, { signer, maxAmount, maxTotalAmount, assets });
+const result = await client.callTool({ name: "market_report", arguments: { ticker: "TKRW" } });
+```
+
+옵션도 게이트도 동일합니다: 결제 요구 도구 결과가 오면 상한 아래서 서명해
+`_meta["x402/payment"]`에 실어 한 번만 재시도하고, 영수증은 `onPaid`로 옵니다.
+거부 시 판매자의 결과가 그대로 반환되고 `onSkipped`가 이유를 알려줍니다.
+`callTool(params)`가 있는 것이면 무엇이든 감쌀 수 있습니다 — MCP SDK는
+의존성이 아닙니다. 실행 예시: `examples/paid-mcp-tool.ts`.
+
 ---
 
 ## 3. Permit2 토큰: 유일한 트랜잭션
