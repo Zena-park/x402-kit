@@ -78,4 +78,4 @@
 | 과금하는 API | [seller-guide.ko.md](./seller-guide.ko.md) |
 | Facilitator 운영자 | [operator-guide.ko.md](./operator-guide.ko.md) |
 
-레퍼런스: `packages/*/README.md` (모든 옵션) · `examples/` (사용 사례별 실행 파일) · `playground/` (설명이 곁들여진 엔드투엔드 데모).
+레퍼런스: `packages/*/README.md` (모든 옵션) · `examples/` (사용 사례별 실행 파일) · [`playground/`](../../playground/README.ko.md) (설명이 곁들여진 엔드투엔드 데모, 한국어 README).
