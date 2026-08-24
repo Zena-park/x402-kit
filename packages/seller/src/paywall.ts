@@ -56,6 +56,22 @@ export function resetDefaultReplayStore(): void {
  */
 export const MAX_PAYMENT_HEADER_BYTES = 8 * 1024;
 
+/**
+ * Decode one wire-encoded payment — the PAYMENT-SIGNATURE header's bytes, on
+ * any channel (an HTTP header, a QR reply over NFC/BLE). One shared place to
+ * harden: `undefined` = nothing presented; `null` = presented but oversized or
+ * unparseable, which fails schema validation downstream → `invalid_payload`.
+ */
+export function decodeWirePayment(wire: string | null | undefined): unknown {
+  if (typeof wire !== "string" || wire.length === 0) return undefined;
+  if (wire.length > MAX_PAYMENT_HEADER_BYTES) return null;
+  try {
+    return JSON.parse(Buffer.from(wire, "base64").toString("utf8"));
+  } catch {
+    return null;
+  }
+}
+
 /** Reason codes the paywall will echo into a 402. Anything else becomes a generic message */
 const KNOWN_REASONS: ReadonlySet<string> = new Set([
   ...Object.values(ErrorReason),
@@ -481,19 +497,11 @@ export function createPaywall(options: PaywallOptions): Paywall {
 
     async check(request) {
       const resource = resourceFor(request);
-      const header = request.headers.get(HEADER_PAYMENT_SIGNATURE);
-      // An empty header is "missing" (same 402 reason), matching the pre-split behavior
-      if (header) {
-        if (header.length > MAX_PAYMENT_HEADER_BYTES) return renderHttp(refused(resource, ErrorReason.INVALID_PAYLOAD));
-        let payment: unknown;
-        try {
-          payment = JSON.parse(Buffer.from(header, "base64").toString("utf8"));
-        } catch {
-          return renderHttp(refused(resource, ErrorReason.INVALID_PAYLOAD));
-        }
-        return renderHttp(await checkPayment(payment, resource));
-      }
-      return renderHttp(await checkPayment(undefined, resource));
+      // An empty header reads as "missing" (same 402 reason as before the
+      // split); an oversized or unparseable one decodes to null, which fails
+      // schema validation → invalid_payload, exactly the pre-split behavior.
+      const payment = decodeWirePayment(request.headers.get(HEADER_PAYMENT_SIGNATURE));
+      return renderHttp(await checkPayment(payment, resource));
     },
   };
 }

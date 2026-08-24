@@ -23,13 +23,20 @@
  */
 
 import {
+  buildPaymentRequired,
   encodePaymentRequired,
   type PaymentRequired,
   type PaymentRequirements,
   type ResourceInfo,
   type SettleResponse,
 } from "@x402.kit/core";
-import { MAX_PAYMENT_HEADER_BYTES, createPaywall, type CaptureOptions, type PaywallOptions } from "./paywall.js";
+import {
+  createPaywall,
+  decodeWirePayment,
+  type CaptureOptions,
+  type PaymentDecision,
+  type PaywallOptions,
+} from "./paywall.js";
 
 export interface PosTerminalOptions
   extends Pick<PaywallOptions, "facilitator" | "schemes" | "replayStore" | "onSettled" | "onVerified"> {}
@@ -73,25 +80,25 @@ export function createPosTerminal(options: PosTerminalOptions): PosTerminal {
       // amount fails at the counter's build step, not at the customer's scan),
       // and the replay store stays process-wide so sibling lanes share claims.
       const paywall = createPaywall({ ...options, accepts: [terms], resource, settle: "after-handler" });
-      const paymentRequired: PaymentRequired = { x402Version: 2, resource, accepts: [terms] };
+      const paymentRequired: PaymentRequired = buildPaymentRequired({ resource, accepts: [terms] });
 
       return {
         qr: encodePaymentRequired(paymentRequired),
         paymentRequired,
 
         async authorize(wire) {
-          // The wire payload is the HTTP header's bytes on a different
-          // channel: same size guard, same base64+JSON decode, then straight
-          // into the transport-free protocol core.
-          let payment: unknown = null; // null fails schema validation → invalid_payload
-          if (typeof wire === "string" && wire.length > 0 && wire.length <= MAX_PAYMENT_HEADER_BYTES) {
-            try {
-              payment = JSON.parse(Buffer.from(wire, "base64").toString("utf8"));
-            } catch {
-              /* stays null */
-            }
+          // The wire payload is the HTTP header's bytes on a different channel
+          // — the same shared decode (size guard, base64, JSON), then straight
+          // into the transport-free protocol core. An embedded facilitator may
+          // throw plain errors; the counter contract is "never a throw", so
+          // anything escaping the core reads as a facilitator failure (the
+          // core has already released the replay claim on that path).
+          let decision: PaymentDecision;
+          try {
+            decision = await paywall.checkPayment(decodeWirePayment(wire), resource, "payment payload is required");
+          } catch {
+            return { authorized: false, reason: "facilitator_unavailable" };
           }
-          const decision = await paywall.checkPayment(payment, resource);
           if (!decision.paid) {
             return {
               authorized: false,

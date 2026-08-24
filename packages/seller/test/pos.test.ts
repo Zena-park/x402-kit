@@ -95,7 +95,7 @@ describe("createPosTerminal", () => {
     expect(echoed).toEqual({ authorized: false, reason: "invalid_payment_requirements" });
 
     expect(await order.authorize("not-base64-json")).toEqual({ authorized: false, reason: "invalid_payload" });
-    expect(await order.authorize("")).toEqual({ authorized: false, reason: "invalid_payload" });
+    expect(await order.authorize("")).toEqual({ authorized: false, reason: "payment payload is required" });
     expect(await order.authorize("A".repeat(9 * 1024))).toEqual({ authorized: false, reason: "invalid_payload" });
     expect(facilitator.verify).not.toHaveBeenCalled();
   });
@@ -104,6 +104,15 @@ describe("createPosTerminal", () => {
     const facilitator = fakeFacilitator(new FacilitatorUnreachableError("down"));
     const order = createPosTerminal({ facilitator }).order(terms, resource);
     expect(await order.authorize(wire())).toEqual({ authorized: false, reason: "facilitator_unavailable" });
+  });
+
+  it("an embedded facilitator throwing a PLAIN error still honors the never-throw contract", async () => {
+    const facilitator = fakeFacilitator(new Error("viem RPC exploded"));
+    const order = createPosTerminal({ facilitator }).order(terms, resource);
+    expect(await order.authorize(wire())).toEqual({ authorized: false, reason: "facilitator_unavailable" });
+    // the claim was released on the throw path — a retry can authorize
+    const retry = await createPosTerminal({ facilitator: fakeFacilitator() }).order(terms, resource).authorize(wire());
+    expect(retry.authorized).toBe(true);
   });
 
   it("a failed settlement surfaces through capture's result and onSettled", async () => {

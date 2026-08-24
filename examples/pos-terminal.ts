@@ -50,7 +50,10 @@ async function main(): Promise<void> {
   console.log(`replay at lane 2 → ${replayed.authorized ? "PAID TWICE?!" : `refused (${!replayed.authorized && replayed.reason})`}`);
 
   // ── POS: CAPTURE (async, on-chain, gas is the facilitator's) ───────────
+  // capture() never rejects — a failed settlement comes back as success: false,
+  // and reporting it as captured is how a terminal ships phantom revenue.
   const settled = await auth.capture();
+  if (!settled.success) throw new Error(`capture failed: ${settled.errorReason}`);
   console.log(`captured on-chain, tx ${settled.transaction}`);
 }
 
