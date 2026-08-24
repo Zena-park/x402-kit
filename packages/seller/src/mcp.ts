@@ -11,9 +11,11 @@
  * `_meta["x402/payment"]`; the receipt leaves in `_meta["x402/payment-response"]`.
  *
  * upto: a handler that knows the real charge puts
- * `_meta: { "x402kit/settlement-overrides": { amount } }` on its result; the
- * wrapper reads it, strips it, and settles that amount — the MCP twin of the
- * HTTP `Settlement-Overrides` header.
+ * `_meta: { "x402kit/settlement-overrides": { amount } }` on its result; in
+ * `settle: "after-handler"` mode the wrapper reads it, strips it, and settles
+ * that amount — the MCP twin of the HTTP `Settlement-Overrides` header. In
+ * `"sync"` mode the payment has already settled at the signed amount, so a
+ * present override is a loud error, never a silent over-charge.
  */
 
 import {
@@ -68,16 +70,35 @@ export interface McpPaywallOptions extends Omit<PaywallOptions, "resource" | "se
   settle?: "sync" | "after-handler";
 }
 
-/** Read and strip the handler's settle-amount override from its result `_meta` */
-function takeOverrides(result: McpToolResult): { result: McpToolResult; overrides?: CaptureOptions } {
+/**
+ * Read and strip the handler's settle-amount override from its result `_meta`.
+ * The override is the SELLER's own code talking to this wrapper, so a shape it
+ * cannot honor is a seller bug — surfaced loudly (a throw) rather than by
+ * silently settling the full signed cap.
+ */
+function takeOverrides(result: McpToolResult): {
+  result: McpToolResult;
+  present: boolean;
+  overrides?: CaptureOptions;
+} {
   const meta = result._meta;
-  if (meta?.[MCP_META_SETTLEMENT_OVERRIDES] === undefined) return { result };
+  if (meta?.[MCP_META_SETTLEMENT_OVERRIDES] === undefined) return { result, present: false };
   const { [MCP_META_SETTLEMENT_OVERRIDES]: raw, ...rest } = meta;
   const stripped: McpToolResult = { ...result };
   if (Object.keys(rest).length > 0) stripped._meta = rest;
   else delete stripped._meta;
+
   const amount = typeof raw === "object" && raw !== null ? (raw as { amount?: unknown }).amount : undefined;
-  return { result: stripped, ...(typeof amount === "string" ? { overrides: { amount } } : {}) };
+  let normalized: string;
+  if (typeof amount === "string") normalized = amount;
+  else if (typeof amount === "number" && Number.isSafeInteger(amount) && amount >= 0) normalized = String(amount);
+  else if (typeof amount === "bigint" && amount >= 0n) normalized = String(amount);
+  else {
+    throw new Error(
+      `${MCP_META_SETTLEMENT_OVERRIDES} carries an unusable amount (${typeof amount}) — pass atomic units as a decimal string (or a non-negative safe integer)`,
+    );
+  }
+  return { result: stripped, present: true, overrides: { amount: normalized } };
 }
 
 /**
@@ -105,15 +126,17 @@ export function paidTool<Args, Config>(
     // The HTTP transport's size guard, applied to the parsed object: an
     // oversized "payment" is refused (null fails schema validation →
     // invalid_payload) before schema work and before it could ever be
-    // forwarded to the facilitator. Measured on the raw JSON, so the cap is
-    // slightly more permissive than HTTP's base64 measurement — both bound
-    // the same processing cost. An in-process transport can hand over values
-    // JSON never could (circular references, functions) — a failed or
-    // undefined measurement is refused the same way, never thrown.
+    // forwarded to the facilitator. Measured in UTF-8 BYTES of the JSON so a
+    // CJK/emoji payload cannot smuggle 3-4x the cap past a code-unit count
+    // (HTTP's base64-length measurement stays ~25% tighter — same cost bound).
+    // An in-process transport can hand over values JSON never could (circular
+    // references, functions) — a failed or undefined measurement is refused
+    // the same way, never thrown.
     let payment: unknown = raw;
     if (raw !== undefined) {
       try {
-        if ((JSON.stringify(raw)?.length ?? Infinity) > MAX_PAYMENT_HEADER_BYTES) payment = null;
+        const json = JSON.stringify(raw) as string | undefined;
+        if (json === undefined || Buffer.byteLength(json, "utf8") > MAX_PAYMENT_HEADER_BYTES) payment = null;
       } catch {
         payment = null;
       }
@@ -136,8 +159,16 @@ export function paidTool<Args, Config>(
     }
 
     if (!decision.capture) {
-      // sync — already settled; attach the receipt to whatever the tool returns
-      const result = await run();
+      // sync — already settled at the signed amount BEFORE the handler ran, so
+      // an override here cannot be honored. Strip it (a kit-internal key must
+      // never reach the client) and fail loudly: silently over-charging every
+      // buyer the full cap is the one outcome a metered tool must not ship.
+      const { result, present } = takeOverrides(await run());
+      if (present) {
+        throw new Error(
+          `${MCP_META_SETTLEMENT_OVERRIDES} requires settle: "after-handler" — in "sync" mode the payment settles at the signed amount before the handler runs`,
+        );
+      }
       return decision.settlement ? attachMcpSettleResponse(result, decision.settlement) : result;
     }
 

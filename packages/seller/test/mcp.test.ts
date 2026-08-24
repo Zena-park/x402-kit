@@ -138,6 +138,15 @@ describe("paidTool", () => {
     expect(handler).toHaveBeenCalledTimes(1);
   });
 
+  it("a settlement-overrides key in sync mode is a loud error, never a silent full-cap charge", async () => {
+    const handler = vi.fn(async () => ({
+      content: [{ type: "text", text: "42" }],
+      _meta: { [MCP_META_SETTLEMENT_OVERRIDES]: { amount: "321" } },
+    }));
+    const { wrapped } = register({}, handler as never); // settle defaults to "sync"
+    await expect(wrapped({}, paidExtra())).rejects.toThrow(/after-handler/);
+  });
+
   it("a facilitator outage becomes a non-payment-shaped error result (clients must not try to pay it)", async () => {
     const { wrapped } = register({ facilitator: fakeFacilitator(new FacilitatorUnreachableError("down")) });
     const result = (await wrapped({}, paidExtra())) as McpToolResult;
@@ -181,6 +190,27 @@ describe("paidTool", () => {
       const result = (await wrapped({}, paidExtra())) as McpToolResult;
       expect(result.content).toEqual(toolResult.content);
       expect(result._meta?.[MCP_META_PAYMENT_RESPONSE]).toBeUndefined();
+    });
+
+    it("accepts an integer override amount (the natural JS spelling)", async () => {
+      const handler = vi.fn(async () => ({
+        content: [{ type: "text", text: "42" }],
+        _meta: { [MCP_META_SETTLEMENT_OVERRIDES]: { amount: 321000000 } },
+      }));
+      const { wrapped, facilitator } = register({ settle: "after-handler" }, handler as never);
+      const result = (await wrapped({}, paidExtra())) as McpToolResult;
+      expect(result._meta?.[MCP_META_PAYMENT_RESPONSE]).toEqual(okSettle);
+      expect(facilitator.settle).toHaveBeenCalledTimes(1);
+    });
+
+    it("an unusable override amount fails loudly, never settling the full cap silently", async () => {
+      const handler = vi.fn(async () => ({
+        content: [{ type: "text", text: "42" }],
+        _meta: { [MCP_META_SETTLEMENT_OVERRIDES]: { amount: { atomic: "321" } } },
+      }));
+      const { wrapped, facilitator } = register({ settle: "after-handler" }, handler as never);
+      await expect(wrapped({}, paidExtra())).rejects.toThrow(/unusable amount/);
+      expect(facilitator.settle).not.toHaveBeenCalled();
     });
 
     it("strips the settlement-overrides meta from the delivered result", async () => {
