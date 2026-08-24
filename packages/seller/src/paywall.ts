@@ -24,14 +24,15 @@ import {
   HEADER_PAYMENT_RESPONSE,
   HEADER_PAYMENT_SIGNATURE,
   buildPaymentRequired,
-  decodePaymentPayloadSafe,
   encodeSettleResponse,
   exactScheme,
+  parsePaymentPayload,
   resolveHandler,
   selectRequirements,
   uptoScheme,
   type AnySchemeHandler,
   type PaymentPayload,
+  type PaymentRequired,
   type PaymentRequirements,
   type ResourceInfo,
   type SettleResponse,
@@ -173,8 +174,32 @@ export type PaywallDecision =
       capture?: (opts?: CaptureOptions) => Promise<{ header?: string; settlement: SettleResponse }>;
     };
 
+/**
+ * Transport-free decision — plain objects instead of a web Response, so
+ * non-HTTP transports (MCP) can render the protocol outcome their own way.
+ * `check()` is the HTTP rendering of exactly this.
+ */
+export type PaymentDecision =
+  | { paid: false; status: 402; paymentRequired: PaymentRequired }
+  | { paid: false; status: 503; retryAfter: number }
+  | {
+      paid: true;
+      settlement?: SettleResponse;
+      /** Same contract as PaywallDecision.capture, minus the header encoding */
+      capture?: (opts?: CaptureOptions) => Promise<{ ok: boolean; settlement: SettleResponse }>;
+    };
+
 export interface Paywall {
   check(request: Request): Promise<PaywallDecision>;
+  /**
+   * The transport-free core `check()` wraps: takes the buyer's payment as a
+   * decoded (but unvalidated) object — or undefined when the request carried
+   * none — plus the resource it is presented against. Validation, terms
+   * matching, resource binding, the replay guard, verify/settle and every
+   * settle mode all happen here. `missingPaymentError` customizes the 402
+   * reason when no payment was presented (default: the HTTP header message).
+   */
+  checkPayment(payment: unknown, resource: ResourceInfo, missingPaymentError?: string): Promise<PaymentDecision>;
   /**
    * Optional startup check: fetch the facilitator's /supported and assert every
    * accepts[] entry (scheme+network) is advertised. Call once at boot to catch
@@ -227,32 +252,64 @@ export function createPaywall(options: PaywallOptions): Paywall {
     return options.resource ?? { url: request.url };
   }
 
-  function paymentRequired(resource: ResourceInfo, error: string): Response {
-    const body = buildPaymentRequired({ resource, accepts: options.accepts, error });
-    // One stringify serves both the body and the header (base64 of the same JSON)
-    const json = JSON.stringify(body);
-    return new Response(json, {
+  function refused(resource: ResourceInfo, error: string): PaymentDecision {
+    return {
+      paid: false,
       status: 402,
-      headers: {
-        "content-type": "application/json",
-        [HEADER_PAYMENT_REQUIRED]: Buffer.from(json, "utf8").toString("base64"),
-      },
-    });
+      paymentRequired: buildPaymentRequired({ resource, accepts: options.accepts, error }),
+    };
   }
 
   /** A facilitator-supplied reason is echoed only if it is a known protocol code */
-  function rejected(resource: ResourceInfo, reason: unknown, fallback: string): PaywallDecision {
+  function rejected(resource: ResourceInfo, reason: unknown, fallback: string): PaymentDecision {
     const code = typeof reason === "string" && KNOWN_REASONS.has(reason) ? reason : fallback;
-    return { paid: false, response: paymentRequired(resource, code) };
+    return refused(resource, code);
   }
 
-  function unavailable(): PaywallDecision {
+  function unavailable(): PaymentDecision {
+    return { paid: false, status: 503, retryAfter: 5 };
+  }
+
+  /** HTTP rendering of a transport-free decision — the check() half of the split */
+  function renderHttp(decision: PaymentDecision): PaywallDecision {
+    if (!decision.paid) {
+      if (decision.status === 402) {
+        // One stringify serves both the body and the header (base64 of the same JSON)
+        const json = JSON.stringify(decision.paymentRequired);
+        return {
+          paid: false,
+          response: new Response(json, {
+            status: 402,
+            headers: {
+              "content-type": "application/json",
+              [HEADER_PAYMENT_REQUIRED]: Buffer.from(json, "utf8").toString("base64"),
+            },
+          }),
+        };
+      }
+      return {
+        paid: false,
+        response: new Response(JSON.stringify({ error: "facilitator_unavailable" }), {
+          status: 503,
+          headers: { "content-type": "application/json", "retry-after": String(decision.retryAfter) },
+        }),
+      };
+    }
+    const { settlement, capture } = decision;
     return {
-      paid: false,
-      response: new Response(JSON.stringify({ error: "facilitator_unavailable" }), {
-        status: 503,
-        headers: { "content-type": "application/json", "retry-after": "5" },
-      }),
+      paid: true,
+      ...(settlement ? { settlement } : {}),
+      responseHeaders: settlement ? { [HEADER_PAYMENT_RESPONSE]: encodeSettleResponse(settlement) } : NO_HEADERS,
+      ...(capture
+        ? {
+            capture: async (opts?: CaptureOptions) => {
+              const result = await capture(opts);
+              return result.ok
+                ? { header: encodeSettleResponse(result.settlement), settlement: result.settlement }
+                : { settlement: result.settlement };
+            },
+          }
+        : {}),
     };
   }
 
@@ -268,35 +325,39 @@ export function createPaywall(options: PaywallOptions): Paywall {
     return { success: false, errorReason, transaction: "", network };
   }
 
-  return {
-    async verifySupported() {
-      // Only a URL-backed client can advertise /supported; an embedded
-      // facilitator is trusted to handle whatever it was constructed with.
-      if (!(facilitator instanceof FacilitatorClient)) return;
-      const supported = await facilitator.supported();
-      const kinds = new Set(supported.kinds.map((k) => `${k.scheme}|${k.network}`));
-      for (const req of options.accepts) {
-        if (!kinds.has(`${req.scheme}|${req.network}`)) {
-          throw new Error(
-            `facilitator does not advertise ${req.scheme} on ${req.network} — check the accepts[] or the facilitator config`,
-          );
-        }
+  async function verifySupported(): Promise<void> {
+    // Only a URL-backed client can advertise /supported; an embedded
+    // facilitator is trusted to handle whatever it was constructed with.
+    if (!(facilitator instanceof FacilitatorClient)) return;
+    const supported = await facilitator.supported();
+    const kinds = new Set(supported.kinds.map((k) => `${k.scheme}|${k.network}`));
+    for (const req of options.accepts) {
+      if (!kinds.has(`${req.scheme}|${req.network}`)) {
+        throw new Error(
+          `facilitator does not advertise ${req.scheme} on ${req.network} — check the accepts[] or the facilitator config`,
+        );
       }
-    },
+    }
+  }
 
-    async check(request) {
-      const resource = resourceFor(request);
-      const refuse = (reason: string): PaywallDecision => ({ paid: false, response: paymentRequired(resource, reason) });
+  // The protocol core — everything from payload validation through settlement,
+  // in transport-free object form. check() below is its HTTP rendering.
+  async function checkPayment(
+    payment: unknown,
+    resource: ResourceInfo,
+    missingPaymentError?: string,
+  ): Promise<PaymentDecision> {
+      const refuse = (reason: string): PaymentDecision => refused(resource, reason);
 
-      const header = request.headers.get(HEADER_PAYMENT_SIGNATURE);
-      if (!header) return refuse(`${HEADER_PAYMENT_SIGNATURE} header is required`);
-      if (header.length > MAX_PAYMENT_HEADER_BYTES) return refuse(ErrorReason.INVALID_PAYLOAD);
+      if (payment === undefined) return refuse(missingPaymentError ?? `${HEADER_PAYMENT_SIGNATURE} header is required`);
 
-      // Safe decode — a crafted header (bad base64, malformed amount, missing
-      // fields) becomes a clean 402, never a 500 crash of the seller.
-      const decoded = decodePaymentPayloadSafe(header);
+      // Safe parse — a crafted payment (malformed amount, missing fields)
+      // becomes a clean 402 decision, never a 500 crash of the seller.
+      const decoded = parsePaymentPayload(payment);
       if (!decoded.ok) return refuse(ErrorReason.INVALID_PAYLOAD);
-      const payload: PaymentPayload = decoded.value;
+      // Same cast the HTTP codec makes: the zod schema is the validator, the
+      // interface is the public face (exactOptionalPropertyTypes mismatch only).
+      const payload = decoded.value as PaymentPayload;
 
       // The payload's `accepted` must echo one of our accepts[] — terms we
       // never offered are a protocol error, not something to send onward.
@@ -361,14 +422,14 @@ export function createPaywall(options: PaywallOptions): Paywall {
       }
 
       if (options.settle === "none") {
-        return { paid: true, responseHeaders: NO_HEADERS };
+        return { paid: true };
       }
 
       if (options.settle === "async") {
         // Approve/capture split: the goods go out on verify; capture runs behind.
         // Who carries the risk in between is the operator's policy, not code.
         void facilitator.settle(facilitatorRequest).catch(() => settleFailure(chosen.network)).then(concludeSettle);
-        return { paid: true, responseHeaders: NO_HEADERS };
+        return { paid: true };
       }
 
       if (options.settle === "after-handler") {
@@ -378,8 +439,8 @@ export function createPaywall(options: PaywallOptions): Paywall {
         // concurrent capture() calls settle exactly once. Never rejects: the
         // handler's response is already on the wire by then, so the only
         // honest channel for a failure is onSettled.
-        let inflight: Promise<{ header?: string; settlement: SettleResponse }> | undefined;
-        const capture = (opts?: CaptureOptions): Promise<{ header?: string; settlement: SettleResponse }> => {
+        let inflight: Promise<{ ok: boolean; settlement: SettleResponse }> | undefined;
+        const capture = (opts?: CaptureOptions): Promise<{ ok: boolean; settlement: SettleResponse }> => {
           if (inflight) return inflight;
           // Phase-dependent amount: the scheme judges the seller's figure
           // (upto: ≤ the signed cap) and the settle request carries it in
@@ -396,14 +457,10 @@ export function createPaywall(options: PaywallOptions): Paywall {
                     judged ? { ...facilitatorRequest, paymentRequirements: { ...chosen, amount: judged.amount } } : facilitatorRequest,
                   )
                   .catch(() => settleFailure(chosen.network));
-          inflight = settled.then(async (result) =>
-              (await concludeSettle(result))
-                ? { header: encodeSettleResponse(result), settlement: result }
-                : { settlement: result },
-            );
+          inflight = settled.then(async (result) => ({ ok: await concludeSettle(result), settlement: result }));
           return inflight;
         };
-        return { paid: true, responseHeaders: NO_HEADERS, capture };
+        return { paid: true, capture };
       }
 
       let settlement: SettleResponse;
@@ -415,11 +472,28 @@ export function createPaywall(options: PaywallOptions): Paywall {
         throw e;
       }
       if (!(await concludeSettle(settlement))) return rejected(resource, settlement?.errorReason, "settlement failed");
-      return {
-        paid: true,
-        settlement,
-        responseHeaders: { [HEADER_PAYMENT_RESPONSE]: encodeSettleResponse(settlement) },
-      };
+      return { paid: true, settlement };
+  }
+
+  return {
+    verifySupported,
+    checkPayment,
+
+    async check(request) {
+      const resource = resourceFor(request);
+      const header = request.headers.get(HEADER_PAYMENT_SIGNATURE);
+      // An empty header is "missing" (same 402 reason), matching the pre-split behavior
+      if (header) {
+        if (header.length > MAX_PAYMENT_HEADER_BYTES) return renderHttp(refused(resource, ErrorReason.INVALID_PAYLOAD));
+        let payment: unknown;
+        try {
+          payment = JSON.parse(Buffer.from(header, "base64").toString("utf8"));
+        } catch {
+          return renderHttp(refused(resource, ErrorReason.INVALID_PAYLOAD));
+        }
+        return renderHttp(await checkPayment(payment, resource));
+      }
+      return renderHttp(await checkPayment(undefined, resource));
     },
   };
 }
