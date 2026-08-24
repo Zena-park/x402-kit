@@ -4,12 +4,18 @@
   "version": "0.0.0",
   "type": "module",
   "dependencies": {
+    "@x402.kit/buyer": "*",
     "@x402.kit/core": "*",
-    "viem": "^2.21.0",
     "@x402.kit/seller": "*",
-    "@x402.kit/buyer": "*"
+    "viem": "^2.21.0"
   },
   "scripts": {
     "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "devDependencies": {
+    "@modelcontextprotocol/sdk": "^1.30.0",
+    "@x402/core": "^2.23.0",
+    "@x402/evm": "^2.23.0",
+    "@x402/mcp": "^2.23.0"
   }
 }

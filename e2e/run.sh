@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # e2e — boot the shared local world (e2e/harness.sh: anvil + canonical permit2
 # contracts + in-repo TestToken + facilitator), then run every scenario:
-# pay (S1) · flow (presets) · permit2 (S4) · upto (S6) · schedule (pre-signed recurring).
+# pay (S1) · flow (presets) · permit2 (S4) · upto (S6) · schedule (pre-signed
+# recurring) · mcp (paid tools) · mcp-interop (official @x402/mcp oracle).
 set -euo pipefail
 
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/harness.sh"
@@ -16,3 +17,7 @@ echo
 TOKEN_ADDRESS="$TOKEN" npx tsx "$ROOT/e2e/upto.ts"
 echo
 TOKEN_ADDRESS="$TOKEN" npx tsx "$ROOT/e2e/schedule.ts"
+echo
+TOKEN_ADDRESS="$TOKEN" npx tsx "$ROOT/e2e/mcp.ts"
+echo
+TOKEN_ADDRESS="$TOKEN" npx tsx "$ROOT/e2e/mcp-interop.ts"

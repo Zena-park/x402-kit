@@ -85,7 +85,13 @@ export function paidTool<Args, Config>(
   const resource: ResourceInfo = resourceOption ?? { url: mcpToolResourceUrl(name) };
   const paywall = createPaywall(paywallOptions);
 
-  const wrapped: McpToolHandler<Args> = async (args, extra) => {
+  // The MCP SDK calls a schema-less tool's handler with (extra) alone and a
+  // schema-carrying one with (args, extra) — read `extra` from whichever
+  // position it holds and pass the original call through untouched.
+  const wrapped = (async (...callArgs: unknown[]) => {
+    const extra = (callArgs.length > 1 ? callArgs[1] : callArgs[0]) as McpHandlerExtra | undefined;
+    const run = (): McpToolResult | Promise<McpToolResult> =>
+      (handler as (...a: unknown[]) => McpToolResult | Promise<McpToolResult>)(...callArgs);
     const raw = extra?._meta?.[MCP_META_PAYMENT];
     // The HTTP transport's size guard, applied to the parsed object: an
     // oversized "payment" is refused (null fails schema validation →
@@ -111,13 +117,13 @@ export function paidTool<Args, Config>(
 
     if (!decision.capture) {
       // sync — already settled; attach the receipt to whatever the tool returns
-      const result = await handler(args, extra);
+      const result = await run();
       return decision.settlement ? attachMcpSettleResponse(result, decision.settlement) : result;
     }
 
     // after-handler: a throwing handler never charges the buyer (capture is
     // never called; the replay claim expires on its own TTL).
-    const { result, overrides } = takeOverrides(await handler(args, extra));
+    const { result, overrides } = takeOverrides(await run());
     const captured = await decision.capture(overrides);
     if (captured.ok) return attachMcpSettleResponse(result, captured.settlement);
     // Pending is not a failure: the tx may still land and the claim is kept —
@@ -128,7 +134,7 @@ export function paidTool<Args, Config>(
     return buildMcpPaymentRequired(
       buildPaymentRequired({ resource, accepts: options.accepts, error: "Settlement failed" }),
     );
-  };
+  }) as McpToolHandler<Args>;
 
   return [name, config, wrapped];
 }
