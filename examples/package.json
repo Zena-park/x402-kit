@@ -8,7 +8,9 @@
     "@x402.kit/buyer": "*",
     "@x402.kit/seller": "*",
     "@x402.kit/facilitator": "*",
-    "viem": "^2.21.0"
+    "viem": "^2.21.0",
+    "@modelcontextprotocol/sdk": "^1.12.1",
+    "zod": "^3.23.0"
   },
   "scripts": {
     "typecheck": "tsc -p tsconfig.json --noEmit"

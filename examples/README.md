@@ -13,6 +13,7 @@ one thing. Start from the file closest to what you're building.
 | `metered-api.ts` | A usage-metered API — `upto`: the buyer signs a cap, the handler sets `Settlement-Overrides`, the actual is settled | ✅ |
 | `pos-terminal.ts` | In-person POS — authorize (`verify`) / capture (`settle`) split, 402-as-QR | ✅ |
 | `subscription.ts` | Fixed subscription / installments via pre-signed schedules | ✅ |
+| `paid-mcp-tool.ts` | A paid MCP tool — an agent pays per tool call (`paidTool` · `wrapMcpClient`) | ✅ |
 | `dapp-wallet.ts` | Browser wallet → `PaymentSigner` adapter (wagmi/viem) | type-checked (browser) |
 | `self-host-facilitator.ts` | Embed your own facilitator (`createFacilitator`) | type-checked (needs a real RPC + key) |
 

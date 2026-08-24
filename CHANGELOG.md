@@ -6,6 +6,33 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-08-24
+
+MCP transport — paid tools over the Model Context Protocol
+(spec `transports-v2/mcp.md`), wire-compatible with the official `@x402/mcp`
+SDK (interop e2e pays in both directions through the kit facilitator).
+
+### Added
+- `@x402.kit/core` — MCP wire codec: `_meta` keys, payment-required tool-result
+  assembly/extraction, plain-JSON settle receipts (`buildMcpPaymentRequired`,
+  `extractMcpPayment*`, `attachMcp*`).
+- `@x402.kit/seller/mcp` — `paidTool()` wraps one `registerTool` tuple with the
+  paywall; `sync` and `after-handler` modes; a definite settlement failure
+  after execution withholds the tool's content (spec rule); upto actuals via
+  the `x402kit/settlement-overrides` result meta.
+- `@x402.kit/buyer/mcp` — `wrapMcpClient()` pays payment-required tool results
+  under the same caps vocabulary as `wrapFetch` (one paid retry, budget counts
+  what was signed).
+- `examples/paid-mcp-tool.ts` and two e2e scenarios (`mcp`, `mcp-interop`).
+
+### Changed
+- `createPaywall` now also exposes the transport-free `checkPayment()` core;
+  the HTTP `check()` behavior is byte-identical.
+- `preparePayment` (buyer) also returns the signed payload as an object.
+- Removed the stale "budget true-up" wording from docs and the metered-api
+  example (the budget counts the signed cap; the example now demonstrates
+  budget exhaustion).
+
 ## [0.1.0] - 2026-08-22
 
 First public release, published on npm as `@x402.kit/*`.
