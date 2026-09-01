@@ -184,12 +184,6 @@ export interface BuildPayloadOptions {
   /** Validity window in seconds. Defaults to requirements.maxTimeoutSeconds */
   validForSeconds?: number;
   /**
-   * Explicit validity start (unix seconds). Default: `now` minus 60s of
-   * clock-skew slack, i.e. valid immediately. Set it to pin the payment to a
-   * future window (pre-signed schedules); expiry stays `now + validForSeconds`.
-   */
-  validAfter?: number;
-  /**
    * Reference time (unix seconds). Defaults to wall clock. Verifiers judge by
    * chain time, so pass chain time in environments where the chain clock
    * diverges from the wall clock (forked testnets etc.).

@@ -6,7 +6,6 @@
  *   - a facilitator outage is a 503, never a 500 / unhandled rejection
  *   - capture() never rejects; failures reach onSettled
  *   - a non-boolean `isValid` / `success` never reads as paid
- *   - schedules: horizon bound, settled-entry exclusion
  */
 
 import { describe, expect, it, vi } from "vitest";
@@ -23,17 +22,7 @@ import {
   type SettleResponse,
   type VerifyResponse,
 } from "@x402.kit/core";
-import { privateKeyToAccount } from "viem/accounts";
-import { signPaymentSchedule } from "@x402.kit/buyer";
-import {
-  FacilitatorClient,
-  FacilitatorUnreachableError,
-  createPaywall,
-  dueEntries,
-  scheduleEntryId,
-  validateSchedule,
-  withGate,
-} from "../src/index.js";
+import { FacilitatorClient, FacilitatorUnreachableError, createPaywall, withGate } from "../src/index.js";
 
 const terms: PaymentRequirements = {
   scheme: "exact",
@@ -264,30 +253,5 @@ describe("FacilitatorClient", () => {
     new FacilitatorClient("http://f.internal", { allowInsecure: true });
     expect(warn).toHaveBeenCalledTimes(1);
     warn.mockRestore();
-  });
-});
-
-describe("schedules", () => {
-  const signer = privateKeyToAccount("0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80");
-  const p2: PaymentRequirements = { ...terms, extra: { assetTransferMethod: "permit2" } };
-  const NOW = 1_800_000_000;
-  const MONTH = 30 * 86_400;
-
-  it("rejects a schedule reaching past the horizon, and one that already ended", async () => {
-    const far = await signPaymentSchedule(p2, { signer, assets: [p2.asset], periods: { start: NOW, periodSeconds: MONTH, count: 3 }, maxTotalAmount: "30000" });
-    const plain = JSON.parse(JSON.stringify(far));
-    expect(validateSchedule(plain, [p2], { now: NOW }).ok).toBe(true);
-    expect(validateSchedule(plain, [p2], { now: NOW, maxHorizonSeconds: MONTH }).error).toMatch(/horizon/);
-    expect(validateSchedule(plain, [p2], { now: NOW + 4 * MONTH }).error).toMatch(/already closed/);
-  });
-
-  it("dueEntries skips installments the caller has recorded as settled", async () => {
-    const signed = await signPaymentSchedule(p2, { signer, assets: [p2.asset], periods: { start: NOW, periodSeconds: MONTH, count: 2 }, maxTotalAmount: "20000" });
-    const entries = validateSchedule(JSON.parse(JSON.stringify(signed)), [p2], { now: NOW });
-    if (!entries.ok) throw new Error(entries.error);
-    const due = dueEntries(entries.value, NOW + 60);
-    expect(due).toHaveLength(1);
-    const settled = new Set([scheduleEntryId(due[0]!)]);
-    expect(dueEntries(entries.value, NOW + 60, { isSettled: (id) => settled.has(id) })).toHaveLength(0);
   });
 });

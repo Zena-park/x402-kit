@@ -83,9 +83,6 @@ npm run e2e         # the same world as an automated harness
 - **Open-amount payments (`upto`).** The buyer signs a cap, the seller settles
   the actual — usage-metered AI calls, fuel, deposits. `uptoTerms` + `capture({ amount })`
   (or a `Settlement-Overrides` response header); `$0` settles nothing; one cap, one draw.
-- **Subscriptions and installments** with no new on-chain code: the buyer
-  pre-signs one `exact` payment per billing window (`signPaymentSchedule`), the
-  seller settles each when due (`dueEntries` + `chargeScheduled`).
 - **A POS preset.** In-person authorize/capture (`createPosTerminal` —
   `@x402.kit/seller/pos`): 402-as-QR, instant replay-guarded authorization at
   the counter, on-chain capture off the customer's critical path.
@@ -100,8 +97,8 @@ npm run e2e         # the same world as an automated harness
 
 ## Roadmap
 
-- Variable-amount recurring, enforced by the payer's own smart account
-  (spend-permissions-compatible).
+- Recurring payments (subscriptions, variable post-paid billing), enforced by
+  the payer's own smart account (spend-permissions-compatible).
 
 ## License
 

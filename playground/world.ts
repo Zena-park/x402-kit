@@ -6,7 +6,7 @@
  * reads as a self-contained document).
  */
 
-import { createPublicClient, createTestClient, createWalletClient, formatUnits, http, type Address } from "viem";
+import { createPublicClient, createWalletClient, formatUnits, http, type Address } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { ERC20_ABI } from "@x402.kit/core";
 
@@ -21,7 +21,6 @@ export const buyer = privateKeyToAccount("0x59c6995e998f97a5a0044966f0945389dc9e
 
 export const publicClient = createPublicClient({ transport: http(RPC) });
 export const buyerWallet = createWalletClient({ account: buyer, transport: http(RPC) });
-export const anvil = createTestClient({ mode: "anvil", transport: http(RPC) }); // time warping (demo only)
 
 export const chainNow = async (): Promise<number> => Number((await publicClient.getBlock()).timestamp);
 export const balanceOf = (a: Address) =>

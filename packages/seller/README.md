@@ -69,33 +69,6 @@ a proxied upstream response, strip `Settlement-Overrides` from it first, or an
 upstream you do not control decides what you charge.
 Hook-style express/fastify run before the handler and cannot name an amount.
 
-## Subscriptions & installments (pre-signed schedules)
-
-The buyer pre-signs one standard payment per billing period
-(`signPaymentSchedule` in `@x402.kit/buyer`); you accept, store, and settle:
-
-```ts
-import { validateSchedule, dueEntries, chargeScheduled } from "@x402.kit/seller";
-
-// subscribe endpoint: the request body is an untrusted JSON array of payloads
-const result = validateSchedule(body, [terms]); // terms match · unique nonces · ordered windows
-if (result.ok) db.save(result.value);
-
-// billing cron — no 402 round trip; the buyer may be offline
-const isSettled = (id: string) => db.hasCharge(id);
-for (const entry of dueEntries(db.load(), now, { isSettled })) {
-  const result = await chargeScheduled(entry, facilitator); // early → refused by the scheme's own time check
-  if (result.success) db.recordCharge(scheduleEntryId(entry), result.transaction);
-}
-```
-
-Storage and retry policy are yours; validation, window math, and submission
-are the kit's. `validateSchedule` also bounds the horizon (default 400 days —
-every stored entry is a live bearer authorization, so encrypt them at rest)
-and refuses a schedule whose first window already closed. Persist
-`scheduleEntryId` with each successful charge so the cron never resubmits a
-settled installment. See `playground/` for the full runnable story.
-
 ## Paid MCP tools
 
 The same paywall over the Model Context Protocol — wrap one `registerTool`

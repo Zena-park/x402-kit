@@ -249,7 +249,7 @@ async function buildPayload(req: PaymentRequirements, opts: BuildPayloadOptions)
     spender: uptoProxy(opts),
     nonce: hexToBigInt(randomNonce()).toString(),
     deadline: String(now + validFor),
-    witness: { to: req.payTo, facilitator, validAfter: String(opts.validAfter ?? now - 60) },
+    witness: { to: req.payTo, facilitator, validAfter: String(now - 60) },
   };
   const signature = await opts.signer.signTypedData(buildUptoTypedData({ chainId, permit2Address: permit2 }, auth));
   return { x402Version: 2, accepted: req, payload: { signature, permit2Authorization: auth } };

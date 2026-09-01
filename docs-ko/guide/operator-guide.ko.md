@@ -269,7 +269,7 @@ const gate = createPaywall({ accepts, facilitator });   // HTTP 왕복 없음
 ```bash
 # 요구사항: Node 20+, foundry (anvil/cast/forge)
 npm install
-npm run playground          # A(유료 API) → B(POS) → C(구독) 전부
+npm run playground          # A(유료 API) → B(POS) → B2(금액 미확정) 전부
 npm run e2e                 # 자동 테스트 하니스
 ./examples/run.sh           # 사용 사례별 독립 레시피
 ```

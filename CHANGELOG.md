@@ -6,6 +6,18 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Removed
+- Pre-signed payment schedules: `signPaymentSchedule` (buyer); `validateSchedule`,
+  `dueEntries`, `chargeScheduled`, `scheduleEntryId`, `scheduleWindow`,
+  `MAX_SCHEDULE_ENTRIES`, `DEFAULT_MAX_HORIZON_SECONDS` (seller);
+  `exactPaymentWindow` and the `validAfter` build option (core, `signPayment`)
+  — with `examples/subscription.ts`, playground chapter C and the schedule
+  e2e. A schedule was n bearer authorizations held off-chain by the seller,
+  which cannot give a payer per-period accounting or a one-transaction
+  cancellation. Recurring payments return as an account-layer scheme where the
+  payer's own smart account enforces the cap (spend-permissions-compatible) —
+  see the README roadmap.
+
 ## [0.2.0] - 2026-08-24
 
 MCP transport — paid tools over the Model Context Protocol

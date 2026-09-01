@@ -215,21 +215,9 @@ export function assertBuyerPolicy(options: WrapFetchOptions): void {
     throw new Error("buyer requires maxAmount (a decimal atomic-unit string) — an uncapped agent is an incident");
   }
   createSpendTracker(options.maxTotalAmount); // parse (and fail) at construction
-  assertAssetAllowlist(options, "maxAmount");
-}
-
-/**
- * The allowlist gate shared by every signing entry point: a bare atomic-unit
- * cap (`capName`) is token-blind, so an asset allowlist is mandatory unless
- * the caller explicitly opts into any asset.
- */
-export function assertAssetAllowlist(
-  options: { assets?: string[] | undefined; allowAnyAsset?: boolean | undefined },
-  capName: string,
-): void {
   if ((!options.assets || options.assets.length === 0) && !options.allowAnyAsset) {
     throw new Error(
-      `requires \`assets\` (a token-address allowlist) — ${capName} alone is token-blind, ` +
+      "requires `assets` (a token-address allowlist) — maxAmount alone is token-blind, " +
         "so hostile terms could name an expensive token. Pass `allowAnyAsset: true` to opt out.",
     );
   }

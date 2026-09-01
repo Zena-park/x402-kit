@@ -9,8 +9,8 @@ x402-kit이 실제로 어떻게 쓰이는지 **한 명령으로 눈앞에서 돌
 ```bash
 # 요구사항: Node 20+, foundry (anvil/cast/forge)
 npm install
-npm run playground          # A → B → C 전부
-npm run playground -- b     # 특정 장만 (a | b | b2 | c)
+npm run playground          # A → B → B2 전부
+npm run playground -- b     # 특정 장만 (a | b | b2)
 ```
 
 ## 결제 시나리오 지도 — 실세계 결제가 x402에 어떻게 대응되나
@@ -40,10 +40,10 @@ npm run playground -- b     # 특정 장만 (a | b | b2 | c)
 
 | # | 시나리오 | 상태 |
 |---|---|---|
-| S9 | 고정 구독 (넷플릭스형) — 회차별 결제를 **한 번의 서명 절차**로 미리 만들어 맡김 | ▶ **C장에서 실행** |
-| S10 | 변동 후불(통신비·공공요금 — 상한 내 임의 금액 청구) | 미구현 — 지불자의 스마트월렛이 상한을 강제하는 계정층 방식으로 설계 중 |
-| S11 | 할부 — S9와 같은 메커니즘, 값만 다름 (회차금액 × n) | C장 해설 |
-| S12 | 해지 — 스케줄은 판매자에게 중단 통지로 충분(서명 총액 이상은 원래 안 나감; 잔여 회차의 온체인 무효화는 Permit2 직접 호출로 가능, 킷 헬퍼는 예정), 계정층은 지갑의 권한 취소 그 자체 | 스케줄: 가능 · 계정층: 설계 중 |
+| S9 | 고정 구독 (넷플릭스형) | 미구현 — 지불자의 스마트월렛에 주기당 지출 권한을 두는 계정층 방식으로 설계 중 |
+| S10 | 변동 후불(통신비·공공요금 — 상한 내 임의 금액 청구) | 미구현 — 같은 계정층 설계, 스마트월렛이 상한을 강제 |
+| S11 | 할부 — S9와 같은 메커니즘, 값만 다름 (회차금액 × n) | 미구현 (계정층) |
+| S12 | 해지 — 지갑의 권한 취소 그 자체가 해지 | 미구현 (계정층) |
 | S13 | 에이전트 예산 위임 — "이 에이전트가 월 X까지 알아서 결제" (M2M의 상위 모델) | 미구현 (계정층) |
 
 **D군 — 선불** (충전형)
@@ -60,7 +60,6 @@ npm run playground -- b     # 특정 장만 (a | b | b2 | c)
 | **A** `a-online.ts` | S1 · S4 (+S2·S14 해설) | `withPaywall` · `permit2Terms` · `wrapFetch` · `approvePermit2` |
 | **B** `b-pos.ts` | S5 (+S8 해설) | `buildPaymentRequired` · 코덱 · `signPayment` · `FacilitatorClient` |
 | **B2** `b2-upto.ts` | S6 | `uptoTerms` · `/supported`의 `facilitatorAddress` · `signPayment` · settle 시 `amount`=실액 |
-| **C** `c-schedule.ts` | S9 (+S11·S10 해설) | `signPaymentSchedule` · `validateSchedule` · `dueEntries` · `chargeScheduled` |
 
 ## 읽는 법
 
@@ -70,6 +69,3 @@ npm run playground -- b     # 특정 장만 (a | b | b2 | c)
 Base 실배포 바이트코드)을 탑니다 — 이 경로는 토큰의 EIP-3009 기능을 전혀 쓰지
 않으므로, **평범한 ERC-20이어도 완전히 동일하게 동작**합니다. (데모 토큰이
 3009도 갖고 있는 건 e2e 하니스와 공용이라서일 뿐입니다.)
-
-시간 워프(`anvil.increaseTime`)는 데모 전용입니다 — 실전에서는 그냥 시간이
-흐르고, 판매자의 크론이 `dueEntries`로 도래 회차를 골라 청구합니다.

@@ -28,8 +28,6 @@ export interface SignPaymentOptions {
   now?: number;
   /** Cap the on-chain validity window (seconds), overriding the server's maxTimeoutSeconds */
   validForSeconds?: number;
-  /** Explicit validity start (unix seconds) — pins a future window (schedules). Default: immediate */
-  validAfter?: number;
   /**
    * exact/permit2 only: spender proxy override for private/test deployments.
    * Deliberately an option and never read from the 402 — a seller-supplied
@@ -54,7 +52,6 @@ export async function signPayment(
     signer: options.signer,
     ...(options.now !== undefined ? { now: options.now } : {}),
     ...(options.validForSeconds !== undefined ? { validForSeconds: options.validForSeconds } : {}),
-    ...(options.validAfter !== undefined ? { validAfter: options.validAfter } : {}),
     ...(options.permit2Proxy ? { permit2Proxy: options.permit2Proxy } : {}),
     ...(options.permit2Address ? { permit2Address: options.permit2Address } : {}),
     ...(options.uptoPermit2Proxy ? { uptoPermit2Proxy: options.uptoPermit2Proxy } : {}),

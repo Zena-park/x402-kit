@@ -212,28 +212,6 @@ The model never sees the key or the caps. It sees a tool that sometimes says
 
 ---
 
-## 6. Subscriptions from an agent
-
-If a provider bills per period rather than per call, the agent can pre-sign a
-schedule in one ceremony:
-
-```ts
-import { signPaymentSchedule } from "@x402.kit/buyer";
-
-const payloads = await signPaymentSchedule(monthlyTerms, {
-  signer,
-  periods: { start: Math.floor(Date.now() / 1000), periodSeconds: 30 * 86_400, count: 12 },
-  maxTotalAmount: "120000000",  // 12 × 10 USDC — signing refuses past this
-  assets: [USDC],
-});
-await fetch("https://provider.example.com/subscribe", { method: "POST", body: JSON.stringify(payloads) });
-```
-
-Exposure is exactly `count × amount`; each installment only settles inside its
-own window. See `examples/subscription.ts`.
-
----
-
 ## Checklist
 
 - [ ] Key injected from a secret manager; wallet holds only the period's budget.
