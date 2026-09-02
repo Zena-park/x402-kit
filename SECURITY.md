@@ -35,11 +35,11 @@ proof of concept if you have one. You can expect an acknowledgement within
 ## Scope
 
 - `@x402.kit/core` — payload construction and verification (EIP-3009, Permit2,
-  `upto`, `schedule`)
+  `upto`)
 - `@x402.kit/facilitator` — `/verify`, `/settle`, `/health`, `/supported`,
   signer and config handling, Dockerfile
 - `@x402.kit/seller` — paywall middleware and `X-PAYMENT` handling
-- `@x402.kit/buyer` — fetch/axios wrappers, spending caps, schedules
+- `@x402.kit/buyer` — fetch/axios/MCP wrappers, spending caps
 
 Out of scope: issues that require a compromised facilitator private key, the
 `examples/`, `playground/` and `e2e/` directories (which intentionally use the

@@ -34,15 +34,3 @@ export {
   type Permit2TermsInput,
   type UptoTermsInput,
 } from "./terms.js";
-export {
-  chargeScheduled,
-  dueEntries,
-  scheduleEntryId,
-  scheduleWindow,
-  validateSchedule,
-  DEFAULT_MAX_HORIZON_SECONDS,
-  MAX_SCHEDULE_ENTRIES,
-  type DueEntriesOptions,
-  type ScheduleEntry,
-  type ValidateScheduleOptions,
-} from "./schedule.js";

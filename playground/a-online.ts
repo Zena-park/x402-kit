@@ -55,7 +55,7 @@ export async function chapterA(): Promise<void> {
     signer: buyer,
     maxAmount: "5000000000", // the safety pin — never signs above this
     assets: [TOKEN], // the asset allowlist — maxAmount alone is token-blind
-    clock: chainNow, // sign against anvil time (other chapters warp it)
+    clock: chainNow, // the `clock` option — sign against chain time; the default is the wall clock
   });
   const before = await balanceOf(buyer.address);
   const paid = await paidFetch(`http://127.0.0.1:${PORT}/premium`);

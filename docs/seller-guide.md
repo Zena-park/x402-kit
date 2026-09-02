@@ -96,7 +96,8 @@ your buyers in your docs/UI.
 report". `upto` is for a charge you only know **after** doing the work — an AI
 call billed by output tokens, fuel, a deposit: the buyer signs a **cap**, your
 handler measures, and you settle the actual (≤ cap, `"0"` allowed). One cap is
-drawn once. For per-period billing use the pre-signed schedules in §7.
+drawn once. Per-period billing (subscriptions) is not in this release — see the
+Roadmap in the root README.
 
 ```ts
 import { uptoTerms, SETTLEMENT_OVERRIDES_HEADER } from "@x402.kit/seller";
@@ -291,7 +292,7 @@ choices.
 | `"sync"` (default) | verify → **settle** → handler → response carries tx hash | Ordinary paid APIs. Simplest; goods leave after funds land. |
 | `"after-handler"` | verify → handler → settle only if the handler didn't throw | The handler can fail and you don't want to charge for a 500. |
 | `"async"` | verify → respond immediately → settle in background → `onSettled` | Latency-critical, POS-style authorize/capture split. |
-| `"none"` | verify only → hand the payload over via `onVerified` (required) | You control settlement timing yourself (e.g. subscription enrolment). |
+| `"none"` | verify only → hand the payload over via `onVerified` (required) | You control settlement timing yourself (e.g. settle from your own job queue). |
 
 ```ts
 paywall({
@@ -403,51 +404,7 @@ through rather than treating it as a refusal.
 
 ---
 
-## 7. Subscriptions and installments (pre-signed schedules)
-
-The buyer pre-signs one payment per billing period (`signPaymentSchedule` in
-`@x402.kit/buyer`); you accept, store, and settle when due. No 402 round trip,
-so the buyer may be offline at billing time.
-
-```ts
-import { validateSchedule, dueEntries, chargeScheduled, scheduleEntryId } from "@x402.kit/seller";
-
-// 1) subscribe endpoint (Express, with express.json()) — the body is an untrusted JSON array
-app.post("/subscribe", async (req, res) => {
-  const result = validateSchedule(req.body, [monthlyTerms]);
-  // checks: ≤1000 entries · exact scheme · terms match · unique paymentId · ordered & disjoint windows
-  //         · first window not closed >1 day ago · within horizon (default 400 days)
-  if (!result.ok) return res.status(400).json({ error: result.error });
-  await db.saveSchedule(userId, result.value);
-  res.json({ ok: true });
-});
-
-// 2) billing cron — e.g. hourly
-async function billingTick() {
-  const now = Math.floor(Date.now() / 1000);
-  // isSettled must be SYNCHRONOUS ((id, entry) => boolean) — load the settled ids first
-  const settled = new Set(await db.settledScheduleEntryIds());
-  const isSettled = (id: string) => settled.has(id);
-  for (const entry of dueEntries(await db.loadAllSchedules(), now, { isSettled })) {
-    const result = await chargeScheduled(entry, facilitator);
-    if (result.success) await db.recordCharge(scheduleEntryId(entry), result.transaction);
-    else log.warn("charge failed", scheduleEntryId(entry), result.errorReason); // retried next tick
-  }
-}
-```
-
-Division of labour:
-- **Kit**: validation, window math, submission. Too-early submission is refused by the scheme's own time check.
-- **You**: storage, retry policy, cancellation.
-
-Non-negotiable:
-- Every stored entry is a **live bearer authorization**. Encrypt at rest, restrict access.
-- Persist `scheduleEntryId` with each successful charge so the cron never resubmits a settled installment (`isSettled` reads it).
-- Full runnable example: `examples/subscription.ts`, `playground/c-schedule.ts`.
-
----
-
-## 8. Checklist
+## 7. Checklist
 
 - [ ] Terms built with `erc3009Terms` / `permit2Terms`, not a hand-written `extra` domain.
 - [ ] Facilitator URL is `https://` and the operator's API key goes through `FacilitatorClient({ apiKey })`.
@@ -455,7 +412,6 @@ Non-negotiable:
 - [ ] Shared `replayStore` (Redis `SET NX PX`) if running more than one instance.
 - [ ] If `settle` isn't `"sync"`, `onSettled` records and alerts on failures.
 - [ ] 503 `facilitator_unavailable` handled as a maintenance state by your UI/clients.
-- [ ] If accepting schedules: store encrypted, dedupe with `scheduleEntryId`.
 - [ ] Asked the facilitator operator to add your `payTo` to `allowedPayTo` (if they use that control).
 
 ## Where to go next

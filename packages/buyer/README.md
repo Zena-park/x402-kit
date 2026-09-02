@@ -40,14 +40,6 @@ const res = await paidFetch("https://api.example.com/premium");
   refuses to approve an address with no contract code. The allowance is
   unlimited by convention and outlives this kit — `revokePermit2` sets it
   back to zero. After that, payments are signature-only as usual.
-- Subscriptions/installments: `signPaymentSchedule(terms, { signer, periods,
-  maxTotalAmount, assets })` signs one standard payment per billing period in
-  a single ceremony. Exposure is exactly n × amount — signing refuses past
-  `maxTotalAmount` — and each installment only settles inside its own window.
-  `assets` is required here for the same reason as on `wrapFetch` (the terms
-  usually come from the seller). Undo: `revokePermit2` for permit2 schedules;
-  EIP-3009 installments expire with their windows (or `cancelAuthorization`
-  on the token).
 - Axios? `import { attachX402 } from "@x402.kit/buyer/axios"; attachX402(axios, { signer, maxAmount, assets })`
   — same safety model, handling axios's 402-as-rejection and retrying once.
 - MCP? `import { wrapMcpClient } from "@x402.kit/buyer/mcp"` wraps any MCP

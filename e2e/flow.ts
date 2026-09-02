@@ -34,7 +34,7 @@ async function main(): Promise<void> {
       signer: buyer,
       maxAmount: "2000000000", // cap: 2,000 KRW
       assets: [TOKEN], // only pay in the token under test
-      clock: chainClock, // e2e chain is time-warped; production uses the default wall clock
+      clock: chainClock, // the `clock` option — sign against chain time; production keeps the default wall clock
     });
 
     const res = await paidFetch("http://127.0.0.1:4030/article");

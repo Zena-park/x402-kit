@@ -261,7 +261,7 @@ payments on anvil. Nothing leaves your machine.
 ```bash
 # requirements: Node 20+, foundry (anvil/cast/forge)
 npm install
-npm run playground          # A (paid API) → B (POS) → C (subscription)
+npm run playground          # A (paid API) → B (POS) → B2 (open-amount)
 npm run e2e                 # automated harness
 ./examples/run.sh           # isolated per-use-case recipes
 ```

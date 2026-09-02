@@ -9,8 +9,8 @@ a local anvil chain. Nothing leaves your machine.
 ```bash
 # requirements: Node 20+, foundry (anvil/cast/forge)
 npm install
-npm run playground          # all chapters, A → B → C
-npm run playground -- b     # a single chapter (a | b | c)
+npm run playground          # all chapters, A → B → B2
+npm run playground -- b     # a single chapter (a | b | b2)
 ```
 
 ## Payment scenario map — how real-world payments land on x402
@@ -40,10 +40,10 @@ the demo — and when something doesn't run, why not.
 
 | # | Scenario | Status |
 |---|---|---|
-| S9 | Fixed subscription (Netflix-style) — all installments pre-signed in **one signing ceremony** | ▶ **runs in chapter C** |
-| S10 | Variable post-paid billing (utilities — any amount under a cap) | not built yet — being designed account-layer, where the payer's own smart account enforces the cap |
-| S11 | Installments — same mechanism as S9, different numbers (amount × n) | narrated in C |
-| S12 | Cancellation — for schedules, telling the seller to stop suffices (exposure never exceeds what was signed; on-chain invalidation of remaining installments is possible via Permit2 directly, kit helper planned). Account-layer: revoking the wallet permission IS the cancellation | schedules: works · account-layer: in design |
+| S9 | Fixed subscription (Netflix-style) | not built yet — being designed account-layer, where the payer's own smart account holds a per-period spend permission |
+| S10 | Variable post-paid billing (utilities — any amount under a cap) | not built yet — same account-layer design; the smart account enforces the cap |
+| S11 | Installments — same mechanism as S9, different numbers (amount × n) | not built yet (account-layer) |
+| S12 | Cancellation — revoking the wallet permission IS the cancellation | not built yet (account-layer) |
 | S13 | Agent budget delegation — "this agent may spend up to X/month on its own" (the step beyond S1's M2M) | not built yet (account-layer) |
 
 **Group D — prepaid**
@@ -60,7 +60,6 @@ the demo — and when something doesn't run, why not.
 | **A** `a-online.ts` | S1 · S4 (+S2·S14 narration) | `withPaywall` · `permit2Terms` · `wrapFetch` · `approvePermit2` |
 | **B** `b-pos.ts` | S5 (+S8 narration) | `buildPaymentRequired` · codecs · `signPayment` · `FacilitatorClient` |
 | **B2** `b2-upto.ts` | S6 | `uptoTerms` · `facilitatorAddress` from `/supported` · `signPayment` · settle with `amount` = the actual |
-| **C** `c-schedule.ts` | S9 (+S11·S10 narration) | `signPaymentSchedule` · `validateSchedule` · `dueEntries` · `chargeScheduled` |
 
 ## How to read it
 
@@ -71,6 +70,3 @@ Permit2 + `x402ExactPermit2Proxy`, real bytecode vendored from Base). That path
 never touches the token's EIP-3009 functions, so **a plain ERC-20 behaves
 identically** — the demo token only carries EIP-3009 because it is shared with
 the e2e harness.
-
-Time warping (`anvil.increaseTime`) is demo-only — in production time simply
-passes, and the seller's cron picks due installments with `dueEntries`.

@@ -92,7 +92,7 @@ export {
 } from "./scheme.js";
 
 // The exact scheme (built in) — eip3009 and permit2 asset transfer methods
-export { exactScheme, exactPaymentWindow } from "./exact/handler.js";
+export { exactScheme } from "./exact/handler.js";
 export type {
   AnyExactPayload,
   Eip3009Authorization,

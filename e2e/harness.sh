@@ -47,8 +47,8 @@ TOKEN=$(forge create --root "$ROOT/e2e/contracts" src/TestToken.sol:TestToken \
   | python3 -c 'import sys,json; print(json.load(sys.stdin)["deployedTo"])')
 echo "  $TOKEN"
 
-echo "> minting 100,000 KRW to the buyer"
-cast send "$TOKEN" "mint(address,uint256)" "$BUYER" 100000000000 \
+echo "> minting 1,000,000 KRW to the buyer"
+cast send "$TOKEN" "mint(address,uint256)" "$BUYER" 1000000000000 \
   --rpc-url "$RPC" --private-key "$DEPLOYER_KEY" >/dev/null
 
 echo "> starting facilitator (@x402.kit/facilitator)"

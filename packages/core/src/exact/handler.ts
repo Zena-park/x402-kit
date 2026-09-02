@@ -307,23 +307,6 @@ function methodGuard(
   return { reason, ...(payer ? { payer } : {}) };
 }
 
-/**
- * The chain-time window in which an exact payload can settle — inclusive
- * bounds, derived from the payload per its transfer method's own semantics
- * (eip3009 bounds are strict, permit2's are inclusive). The single reader for
- * anything that reasons about "when is this payment due" (schedules etc.).
- */
-export function exactPaymentWindow(
-  payload: PaymentPayload<AnyExactPayload>,
-): { notBefore: number; notAfter: number } {
-  if (isPermit2Payload(payload.payload)) {
-    const auth = payload.payload.permit2Authorization;
-    return { notBefore: Number(auth.witness.validAfter), notAfter: Number(auth.deadline) };
-  }
-  const auth = payload.payload.authorization;
-  return { notBefore: Number(auth.validAfter) + 1, notAfter: Number(auth.validBefore) - 1 };
-}
-
 async function buildPayload(
   req: PaymentRequirements,
   opts: BuildPayloadOptions,
@@ -349,10 +332,9 @@ async function buildPayload(
     from: opts.signer.address,
     to: req.payTo,
     value: req.amount,
-    // Default: 60s of clock-skew slack — validAfter is a strict "after", so it
-    // must sit in the past for the authorization to be valid immediately.
-    // An explicit opts.validAfter pins a future window instead.
-    validAfter: String(opts.validAfter ?? now - 60),
+    // 60s of clock-skew slack — validAfter is a strict "after", so it must sit
+    // in the past for the authorization to be valid immediately.
+    validAfter: String(now - 60),
     validBefore: String(now + validFor),
     nonce: randomNonce(),
   };

@@ -96,8 +96,8 @@ const terms = permit2Terms({ network: "eip155:8453", asset: MY_TOKEN, payTo: MY_
 `exact`는 **요청당 고정 금액**입니다 — "호출당 $0.01", "리포트 한 건 $2". `upto`는
 **일을 끝낸 뒤에야 금액을 아는** 경우를 위한 것입니다 — 출력 토큰으로 청구하는 AI
 호출, 연료 충전, 보증금: 구매자가 **상한**에 서명하고, 핸들러가 측정하고, 실액(≤ 상한,
-`"0"` 가능)을 정산합니다. 상한 하나는 한 번만 인출됩니다. 기간당 청구는 §7의 사전
-서명 스케줄을 쓰세요.
+`"0"` 가능)을 정산합니다. 상한 하나는 한 번만 인출됩니다. 기간당 청구(구독)는 이
+릴리스에 없습니다 — 루트 README의 Roadmap을 참고하세요.
 
 ```ts
 import { uptoTerms, SETTLEMENT_OVERRIDES_HEADER } from "@x402.kit/seller";
@@ -287,7 +287,7 @@ facilitator에는 no-op입니다.
 | `"sync"` (기본) | 검증 → **정산 완료** → 핸들러 실행 → 응답에 tx hash | 일반 유료 API. 가장 단순하고 돈이 확실히 들어온 뒤 상품을 내보냄. |
 | `"after-handler"` | 검증 → 핸들러 실행 → 핸들러가 throw하지 않았을 때만 정산 | 핸들러가 실패할 수 있고, 실패 시 과금하고 싶지 않을 때. |
 | `"async"` | 검증 → 즉시 응답 → 백그라운드 정산 → `onSettled`로 통보 | POS처럼 응답 지연이 중요한 경우. 승인/캡처 분리. |
-| `"none"` | 검증만 → `onVerified`로 페이로드 인계 (필수) | 정산 시점을 직접 통제(구독 등록 등). |
+| `"none"` | 검증만 → `onVerified`로 페이로드 인계 (필수) | 정산 시점을 직접 통제(자체 작업 큐에서 정산 등). |
 
 ```ts
 paywall({
@@ -393,53 +393,7 @@ paywall({ accepts, facilitator, replayStore: redisReplayStore });
 
 ---
 
-## 7. 구독·할부 (사전 서명 스케줄)
-
-구매자가 청구 주기마다 한 건씩 결제를 **미리 서명**해 두면(`@x402.kit/buyer`의
-`signPaymentSchedule`), 판매자는 받아서 저장하고 때가 되면 정산합니다. 402 왕복이
-없으므로 청구 시점에 구매자가 오프라인이어도 됩니다.
-
-```ts
-import { validateSchedule, dueEntries, chargeScheduled, scheduleEntryId } from "@x402.kit/seller";
-
-// 1) 구독 등록 엔드포인트 (Express, express.json() 사용) — body는 신뢰할 수 없는 JSON 배열
-app.post("/subscribe", async (req, res) => {
-  const result = validateSchedule(req.body, [monthlyTerms]);
-  // 검사 항목: ≤1000개 · exact 스킴 · 조건 일치 · paymentId 고유 · 시간창 정렬·비중첩
-  //           · 첫 창이 닫힌 지 1일 이내 · 허용 기간(기본 400일) 이내
-  if (!result.ok) return res.status(400).json({ error: result.error });
-  await db.saveSchedule(userId, result.value);
-  res.json({ ok: true });
-});
-
-// 2) 청구 크론 — 예: 매시간
-async function billingTick() {
-  const now = Math.floor(Date.now() / 1000);
-  // isSettled는 반드시 동기 함수 ((id, entry) => boolean) — 정산된 id를 먼저 로드
-  const settled = new Set(await db.settledScheduleEntryIds());
-  const isSettled = (id: string) => settled.has(id);
-  for (const entry of dueEntries(await db.loadAllSchedules(), now, { isSettled })) {
-    const result = await chargeScheduled(entry, facilitator);
-    if (result.success) await db.recordCharge(scheduleEntryId(entry), result.transaction);
-    else log.warn("charge failed", scheduleEntryId(entry), result.errorReason); // 다음 tick에 재시도
-  }
-}
-```
-
-책임 분담:
-- **키트**: 검증, 시간창 계산, 제출. 너무 이른 제출은 스킴 자체의 시간 검사에서 거부됩니다.
-- **판매자**: 저장, 재시도 정책, 해지 처리.
-
-반드시 지킬 것:
-- 저장된 항목 하나하나가 **살아 있는 무기명 결제 승인**입니다. 저장소를 암호화하고
-  접근을 제한하세요.
-- 정산 성공 시 `scheduleEntryId`를 함께 기록해서 크론이 같은 회차를 다시 제출하지
-  않게 하세요 (`isSettled`가 이를 읽습니다).
-- 전체 실행 예시는 `examples/subscription.ts`, `playground/c-schedule.ts`에 있습니다.
-
----
-
-## 8. 체크리스트
+## 7. 체크리스트
 
 - [ ] `extra` 도메인을 손으로 쓰지 않고 `erc3009Terms` / `permit2Terms`로 생성했다.
 - [ ] facilitator URL이 `https://`이고, 운영자가 준 API 키를 `FacilitatorClient({ apiKey })`로 전달했다.
@@ -447,7 +401,6 @@ async function billingTick() {
 - [ ] 판매자 인스턴스가 여럿이면 공유 `replayStore`(Redis `SET NX PX`)를 넘겼다.
 - [ ] `settle`이 `"sync"`가 아니라면 `onSettled`에서 실패를 기록·알림한다.
 - [ ] 503 `facilitator_unavailable`을 UI/클라이언트가 점검 상태로 처리한다.
-- [ ] 구독을 받는다면 스케줄 저장소를 암호화하고 `scheduleEntryId`로 중복 청구를 막았다.
 - [ ] 수취 주소(`payTo`)를 facilitator 운영자의 `allowedPayTo`에 등록해 달라고 요청했다 (운영자가 그 방식을 쓰는 경우).
 
 ## 다음 단계

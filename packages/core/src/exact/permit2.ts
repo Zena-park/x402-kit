@@ -227,9 +227,8 @@ export async function buildPermit2Payload(
     deadline: String(now + validFor),
     witness: {
       to: req.payTo,
-      // Default: 60s of clock-skew slack, mirroring eip3009. An explicit
-      // opts.validAfter pins a future window instead.
-      validAfter: String(opts.validAfter ?? now - 60),
+      // 60s of clock-skew slack, mirroring eip3009
+      validAfter: String(now - 60),
     },
   };
 

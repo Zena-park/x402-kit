@@ -205,28 +205,6 @@ const tools = {
 
 ---
 
-## 6. 에이전트의 구독
-
-제공자가 호출당이 아니라 기간당 청구한다면, 에이전트는 한 번의 절차로 스케줄을
-사전 서명할 수 있습니다:
-
-```ts
-import { signPaymentSchedule } from "@x402.kit/buyer";
-
-const payloads = await signPaymentSchedule(monthlyTerms, {
-  signer,
-  periods: { start: Math.floor(Date.now() / 1000), periodSeconds: 30 * 86_400, count: 12 },
-  maxTotalAmount: "120000000",  // 12 × 10 USDC — 이를 넘으면 서명 거부
-  assets: [USDC],
-});
-await fetch("https://provider.example.com/subscribe", { method: "POST", body: JSON.stringify(payloads) });
-```
-
-노출은 정확히 `count × amount`이고, 각 회차는 자기 시간창 안에서만 정산됩니다.
-`examples/subscription.ts` 참고.
-
----
-
 ## 체크리스트
 
 - [ ] 키는 시크릿 매니저에서 주입, 지갑에는 해당 기간 예산만.

@@ -52,14 +52,15 @@ export async function chapterB2(): Promise<void> {
   const qr = encodePaymentRequired(
     buildPaymentRequired({ resource: { url: "pos://station-3/pump-7" }, accepts: [terms] }),
   );
-  console.log(`pump: presents upto terms — cap ${krw(BigInt(terms.amount))} — as a QR (${qr.length} chars)`);
+  const cap = BigInt(terms.amount);
+  console.log(`pump: presents upto terms — cap ${krw(cap)} — as a QR (${qr.length} chars)`);
 
   // ─ Customer's phone: scan, sign the CAP (zero gas). The witness binds pump + facilitator
   const scanned = decodePaymentRequiredSafe(qr);
   if (!scanned.ok) throw new Error(scanned.error);
   const payload = await signPayment(scanned.value.accepts[0]!, { signer: buyer, now: await chainNow() });
   const wire = encodePaymentPayload(payload);
-  console.log(`phone: signed a ${krw(BigInt(terms.amount))} cap → pump (the customer authorized AT MOST this)`);
+  console.log(`phone: signed a ${krw(cap)} cap → pump (the customer authorized AT MOST this)`);
 
   // ─ Pump: verify = AUTHORIZE against the cap. The customer must be able to cover the worst case
   const approved = await facilitator.verify({
@@ -84,7 +85,7 @@ export async function chapterB2(): Promise<void> {
   if (!settled.success) throw new Error(`capture failed: ${settled.errorReason}`);
   const after = await balanceOf(buyer.address);
   console.log(`pump: capture confirmed ${krw(BigInt(settled.amount ?? "0"))}, tx ${settled.transaction}`);
-  console.log(`phone: ${krw(before)} → ${krw(after)} — the unused ${krw(BigInt(terms.amount) - actual)} of the cap never moved`);
+  console.log(`phone: ${krw(before)} → ${krw(after)} — the unused ${krw(cap - actual)} of the cap never moved`);
 
   // ─ One cap, one draw: a "second capture" for any other figure returns the first result
   const again = await facilitator.settle({

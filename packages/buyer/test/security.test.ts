@@ -2,7 +2,6 @@
  * Buyer-side hardening against a hostile seller:
  *   - maxTotalAmount bounds the SUM of everything a wrapper signs
  *   - terms that arrived via a redirect to another origin are never signed
- *   - schedules need an asset allowlist (same gate as wrapFetch)
  *   - the axios guard reads the browser's responseURL too
  */
 
@@ -15,7 +14,7 @@ import {
   encodePaymentRequired,
   type PaymentRequirements,
 } from "@x402.kit/core";
-import { signPaymentSchedule, wrapFetch } from "../src/index.js";
+import { wrapFetch } from "../src/index.js";
 import { attachX402 } from "../src/axios.js";
 
 const signer = privateKeyToAccount("0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80");
@@ -85,29 +84,6 @@ describe("origin binding before signing", () => {
     expect(res.status).toBe(402);
     expect(fetchImpl).toHaveBeenCalledTimes(1); // no signature was ever produced or sent
     expect(onSkipped).toHaveBeenCalledWith(expect.stringMatching(/different origin/), expect.anything());
-  });
-});
-
-describe("signPaymentSchedule policy", () => {
-  const p2: PaymentRequirements = { ...terms, extra: { assetTransferMethod: "permit2" } };
-  const periods = { start: 1_800_000_000, periodSeconds: 86_400 * 30, count: 2 };
-
-  it("requires an asset allowlist unless allowAnyAsset", async () => {
-    await expect(signPaymentSchedule(p2, { signer, periods, maxTotalAmount: "20000" })).rejects.toThrow(/assets/);
-    await expect(signPaymentSchedule(p2, { signer, periods, maxTotalAmount: "20000", allowAnyAsset: true })).resolves.toHaveLength(2);
-  });
-
-  it("refuses terms naming a token or network outside the allowlist", async () => {
-    const wbtc = "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599";
-    await expect(signPaymentSchedule(p2, { signer, periods, maxTotalAmount: "20000", assets: [wbtc] })).rejects.toThrow(/allowlist/);
-    await expect(signPaymentSchedule(p2, { signer, periods, maxTotalAmount: "20000", assets: [p2.asset], networks: ["eip155:1"] })).rejects.toThrow(/network/);
-  });
-
-  it("a chain-scoped (CAIP-19) asset entry refuses the same address on another network", async () => {
-    const scoped = [`${p2.network}/erc20:${p2.asset}`];
-    await expect(signPaymentSchedule(p2, { signer, periods, maxTotalAmount: "20000", assets: scoped })).resolves.toHaveLength(2);
-    const elsewhere = { ...p2, network: "eip155:1" as const };
-    await expect(signPaymentSchedule(elsewhere, { signer, periods, maxTotalAmount: "20000", assets: scoped })).rejects.toThrow(/allowlist/);
   });
 });
 
