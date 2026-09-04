@@ -7,7 +7,7 @@
     "@x402.kit/core": "*",
     "@x402.kit/buyer": "*",
     "@x402.kit/seller": "*",
-    "viem": "^2.21.0"
+    "viem": "^2.56.1"
   },
   "scripts": {
     "typecheck": "tsc -p tsconfig.json --noEmit"
