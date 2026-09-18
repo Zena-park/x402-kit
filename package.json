@@ -30,8 +30,8 @@
     "halmos": "cd e2e/contracts && halmos"
   },
   "devDependencies": {
-    "@types/node": "^22.0.0",
-    "tsx": "^4.19.0",
+    "@types/node": "^22.20.2",
+    "tsx": "^4.23.13",
     "typescript": "^5.6.0",
     "vitest": "^3.2.7"
   },
