@@ -10,7 +10,7 @@
     "@x402.kit/facilitator": "*",
     "viem": "^2.21.0",
     "@modelcontextprotocol/sdk": "^1.12.1",
-    "zod": "^3.23.0"
+    "zod": "^4.6.7"
   },
   "scripts": {
     "typecheck": "tsc -p tsconfig.json --noEmit"
